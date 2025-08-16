@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { selectUser, logout } from '../../features/auth/authSlice';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import {
@@ -69,6 +70,8 @@ export function AdminLayout() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications] = useState([
     { id: 1, message: 'New order received', time: '2m ago', unread: true },
@@ -86,8 +89,8 @@ export function AdminLayout() {
   };
 
   const handleLogout = () => {
-    // TODO: Implement logout logic
-    navigate('/admin/login');
+    dispatch(logout());
+    navigate('/');
   };
 
   const SidebarContent = () => (
@@ -136,11 +139,17 @@ export function AdminLayout() {
       <div className="px-4 py-4 border-t">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground text-sm font-medium">A</span>
+            <span className="text-primary-foreground text-sm font-medium">
+              {user?.firstName?.charAt(0) || 'A'}{user?.lastName?.charAt(0) || 'D'}
+            </span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Admin User</p>
-            <p className="text-xs text-muted-foreground">admin@example.com</p>
+            <p className="text-sm font-medium text-foreground">
+              {user ? `${user.firstName} ${user.lastName}` : 'Admin User'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {user?.email || 'admin@example.com'}
+            </p>
           </div>
         </div>
         
@@ -220,7 +229,9 @@ export function AdminLayout() {
               <div className="relative">
                 <button className="flex items-center space-x-2 p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted">
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground text-xs font-medium">A</span>
+                    <span className="text-primary-foreground text-xs font-medium">
+                      {user?.firstName?.charAt(0) || 'A'}{user?.lastName?.charAt(0) || 'D'}
+                    </span>
                   </div>
                   <ChevronDown className="h-4 w-4" />
                 </button>
