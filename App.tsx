@@ -55,7 +55,6 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/admin" element={<Admin />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/product/:slug" element={<ProductDetail />} />
