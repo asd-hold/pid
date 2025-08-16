@@ -10,14 +10,7 @@ import { Product } from '@/entities';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbPage
-} from '../../components/ui/breadcrumb';
+import { ProductBreadcrumb } from '../../components/ProductBreadcrumb';
 import { ProductGrid } from '../../widgets/product-grid/ProductGrid';
 import { NotificationService } from '@/shared/lib/notifications.ts';
 import { useProductPrice, useCurrency } from '@/hooks/use-currency.ts';
@@ -199,75 +192,7 @@ export function ProductDetail() {
       {/* Breadcrumbs */}
       <div className="bg-muted/30 border-b">
         <div className="container mx-auto px-4 py-3">
-          <Breadcrumb>
-            <BreadcrumbList>
-              {/* Home */}
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/">
-                    <Home className="h-4 w-4" />
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-
-              {/* Catalog */}
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/catalog">
-                    {t('navigation.catalog', 'Catalog')}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-
-              {(() => {
-                // Find main category
-                const mainCategory = categories.find(cat => cat.slug === product.category && !cat.parentId);
-
-                // Find subcategory if product has one
-                const subcategory = product.subcategory
-                  ? categories.find(cat => cat.slug === product.subcategory && cat.parentId)
-                  : null;
-
-                return (
-                  <>
-                    {/* Main Category */}
-                    <BreadcrumbItem>
-                      <BreadcrumbLink asChild>
-                        <Link to={`/catalog?category=${product.category}`}>
-                          {mainCategory?.name || product.category}
-                        </Link>
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-
-                    {/* Subcategory */}
-                    {subcategory && (
-                      <>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                          <BreadcrumbLink asChild>
-                            <Link to={`/catalog?category=${product.category}&subcategory=${product.subcategory}`}>
-                              {subcategory.name}
-                            </Link>
-                          </BreadcrumbLink>
-                        </BreadcrumbItem>
-                      </>
-                    )}
-
-                    <BreadcrumbSeparator />
-
-                    {/* Product Name */}
-                    <BreadcrumbItem>
-                      <BreadcrumbPage className="truncate max-w-[200px] sm:max-w-none">
-                        {product.title}
-                      </BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </>
-                );
-              })()}
-            </BreadcrumbList>
-          </Breadcrumb>
+          <ProductBreadcrumb product={product} />
         </div>
       </div>
 
