@@ -33,7 +33,8 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "search": "Search products..."
+    "search": "Search products...",
+    "breadcrumb": "Breadcrumb navigation"
   },
   "product": {
     "title": "Product",
