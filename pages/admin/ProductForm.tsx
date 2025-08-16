@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../app/hooks';
 import { selectCategories } from '../../features/catalog/catalogSlice';
 import { Product } from '../../entities';
+import { ProductsAPI } from '../../shared/api';
 import { Button } from '../../shared/ui/Button';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Badge } from '../../components/ui/badge';
@@ -75,35 +76,42 @@ export function ProductForm() {
   });
 
   useEffect(() => {
-    if (isEditing) {
-      // TODO: Load existing product data
-      setLoading(true);
-      setTimeout(() => {
-        // Mock data for editing
-        setFormData({
-          title: 'Sample Product',
-          slug: 'sample-product',
-          description: 'This is a sample product description.',
-          price: 99.99,
-          originalPrice: 129.99,
-          currency: 'USD',
-          images: ['https://picsum.photos/400/400?random=1'],
-          category: 'electronics',
-          subcategory: 'audio',
-          tags: ['sample', 'electronics'],
-          stock: 50,
-          sku: 'SAMPLE-001',
-          brand: 'Sample Brand',
-          features: ['Feature 1', 'Feature 2'],
-          specifications: { 'Spec 1': 'Value 1', 'Spec 2': 'Value 2' },
-          isNew: false,
-          isFeatured: true,
-          isOnSale: true
-        });
-        setLoading(false);
-      }, 1000);
+    if (isEditing && id) {
+      const loadProduct = async () => {
+        setLoading(true);
+        try {
+          const product = await ProductsAPI.getProduct(id);
+          if (product) {
+            setFormData({
+              title: product.title,
+              slug: product.slug,
+              description: product.description,
+              price: product.price,
+              originalPrice: product.originalPrice,
+              currency: product.currency,
+              images: product.images,
+              category: product.category,
+              subcategory: product.subcategory,
+              tags: product.tags,
+              stock: product.stock,
+              sku: product.sku,
+              brand: product.brand || '',
+              features: product.features,
+              specifications: product.specifications,
+              isNew: product.isNew,
+              isFeatured: product.isFeatured,
+              isOnSale: product.isOnSale
+            });
+          }
+        } catch (error) {
+          console.error('Failed to load product:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadProduct();
     }
-  }, [isEditing]);
+  }, [isEditing, id]);
 
   const mainCategories = categories.filter(cat => !cat.parentId);
   const subcategories = formData.category 
@@ -152,17 +160,45 @@ export function ProductForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setSaving(true);
     try {
-      // TODO: Implement save API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const productData = {
+        title: formData.title,
+        slug: formData.slug,
+        description: formData.description,
+        price: formData.price,
+        originalPrice: formData.originalPrice,
+        currency: formData.currency,
+        images: formData.images,
+        category: formData.category,
+        subcategory: formData.subcategory,
+        tags: formData.tags,
+        stock: formData.stock,
+        sku: formData.sku,
+        brand: formData.brand,
+        features: formData.features,
+        specifications: formData.specifications,
+        isNew: formData.isNew,
+        isFeatured: formData.isFeatured,
+        isOnSale: formData.isOnSale,
+        rating: 0,
+        reviewCount: 0,
+        soldCount: 0
+      };
+
+      if (isEditing && id) {
+        await ProductsAPI.updateProduct(id, productData);
+      } else {
+        await ProductsAPI.createProduct(productData);
+      }
+
       navigate('/admin/products');
     } catch (error) {
       console.error('Failed to save product:', error);
+      setErrors({ submit: 'Failed to save product. Please try again.' });
     } finally {
       setSaving(false);
     }
