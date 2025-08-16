@@ -67,25 +67,23 @@ function App() {
       <Routes>
         {/* Admin Routes - Separate Layout */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/*" element={
+        <Route path="/admin" element={
           <AdminAuthGuard>
-            <AdminLayout>
-              <Routes>
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="products/new" element={<AdminProductForm />} />
-                <Route path="products/:id/edit" element={<AdminProductForm />} />
-                <Route path="categories" element={<AdminCategories />} />
-                <Route path="categories/new" element={<AdminCategoryForm />} />
-                <Route path="categories/:id/edit" element={<AdminCategoryForm />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="orders" element={<AdminOrders />} />
-                <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
-                <Route path="settings" element={<PlaceholderPage title="Settings" />} />
-              </Routes>
-            </AdminLayout>
+            <AdminLayout />
           </AdminAuthGuard>
-        } />
+        }>
+          <Route index element={<AdminDashboard />} />
+          <Route path="products" element={<AdminProducts />} />
+          <Route path="products/new" element={<AdminProductForm />} />
+          <Route path="products/:id/edit" element={<AdminProductForm />} />
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="categories/new" element={<AdminCategoryForm />} />
+          <Route path="categories/:id/edit" element={<AdminCategoryForm />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
+          <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+        </Route>
 
         {/* Shop Routes - Main Layout */}
         <Route path="/*" element={
