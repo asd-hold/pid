@@ -132,6 +132,15 @@ export function Header() {
                         >
                           {t('profile.orderHistory')}
                         </Link>
+                        {user?.role === 'admin' && (
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 text-sm hover:bg-surface-alt transition-theme text-primary font-medium"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            🛠️ Admin Panel
+                          </Link>
+                        )}
                         <hr className="my-1 border-border" />
                         <button
                           className="block w-full text-left px-4 py-2 text-sm hover:bg-surface-alt transition-theme"
