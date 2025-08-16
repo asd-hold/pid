@@ -63,7 +63,7 @@ export function AdminLogin() {
         {/* Footer */}
         <div className="text-center">
           <p className="text-xs text-muted-foreground">
-            {t('admin.login.footer', 'This is an admin-only area. Unauthorized access is prohibited.')}
+            This is an admin-only area. Please login with admin credentials.
           </p>
         </div>
       </div>
