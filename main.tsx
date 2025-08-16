@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './app/store';
 import { ThemeProvider } from './shared/themes/ThemeProvider';
 // import { AppProvider } from './app/AppProvider';
-import App from './App';
+// import App from './App';
 import AdminApp from './AdminApp';
 // import SimpleApp from './SimpleApp';
 import './global.css';
