@@ -33,7 +33,8 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "search": "Search products..."
+    "search": "Search products...",
+    "breadcrumb": "Breadcrumb navigation"
   },
   "product": {
     "title": "Product",
@@ -313,5 +314,116 @@
     "new": "New Arrivals",
     "newDesc": "Check out our latest products",
     "allCategories": "All Categories"
+  },
+  "subcategories": {
+    "explore": "Explore by Category",
+    "subtitle": "Browse our organized product categories",
+    "popular": "Popular Subcategories",
+    "noSubcategories": "No subcategories available"
+  },
+  "admin": {
+    "layout": {
+      "title": "Admin Panel",
+      "search": "Search...",
+      "viewSite": "View Site",
+      "logout": "Logout"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "products": "Products",
+      "categories": "Categories",
+      "orders": "Orders",
+      "users": "Users",
+      "analytics": "Analytics",
+      "settings": "Settings"
+    },
+    "login": {
+      "title": "Admin Login",
+      "subtitle": "Sign in to your admin account",
+      "email": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "footer": "This is an admin-only area. Unauthorized access is prohibited."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Welcome to your admin dashboard",
+      "viewSite": "View Site",
+      "settings": "Settings",
+      "recentActivity": "Recent Activity",
+      "quickActions": "Quick Actions",
+      "addProduct": "Add Product",
+      "addCategory": "Add Category",
+      "manageOrders": "Manage Orders",
+      "manageUsers": "Manage Users",
+      "viewAnalytics": "View Analytics",
+      "viewAll": "View All",
+      "performance": "Performance Overview",
+      "salesOverview": "Sales Overview",
+      "topProducts": "Top Products"
+    },
+    "products": {
+      "title": "Products",
+      "subtitle": "Manage your product catalog",
+      "addProduct": "Add Product",
+      "searchPlaceholder": "Search products...",
+      "allCategories": "All Categories",
+      "sortByDate": "Date Added",
+      "sortByName": "Name",
+      "sortByPrice": "Price",
+      "sortByStock": "Stock",
+      "sortDesc": "Descending",
+      "sortAsc": "Ascending",
+      "noProducts": "No products found",
+      "noProductsFiltered": "Try adjusting your search or filters",
+      "noProductsEmpty": "Get started by adding your first product"
+    },
+    "categories": {
+      "title": "Categories",
+      "subtitle": "Manage your product categories and hierarchy",
+      "addCategory": "Add Category",
+      "searchPlaceholder": "Search categories...",
+      "noCategories": "No categories found",
+      "noCategoriesFiltered": "Try adjusting your search",
+      "noCategoriesEmpty": "Get started by adding your first category"
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Manage user accounts and permissions",
+      "addUser": "Add User",
+      "searchPlaceholder": "Search users...",
+      "allRoles": "All Roles",
+      "allStatuses": "All Statuses",
+      "sortByJoined": "Date Joined",
+      "sortByName": "Name",
+      "sortByEmail": "Email",
+      "sortByLastLogin": "Last Login",
+      "sortDesc": "Descending",
+      "sortAsc": "Ascending",
+      "noUsers": "No users found",
+      "noUsersFiltered": "Try adjusting your search or filters",
+      "noUsersEmpty": "No users have been added yet"
+    },
+    "orders": {
+      "title": "Orders",
+      "subtitle": "Manage customer orders and fulfillment",
+      "export": "Export",
+      "refresh": "Refresh",
+      "searchPlaceholder": "Search orders...",
+      "allStatuses": "All Statuses",
+      "allPayments": "All Payments",
+      "sortByDate": "Date",
+      "sortByNumber": "Order Number",
+      "sortByCustomer": "Customer",
+      "sortByTotal": "Total",
+      "sortDesc": "Descending",
+      "sortAsc": "Ascending",
+      "noOrders": "No orders found",
+      "noOrdersFiltered": "Try adjusting your search or filters",
+      "noOrdersEmpty": "No orders have been placed yet"
+    }
   }
 }

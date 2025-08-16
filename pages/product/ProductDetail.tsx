@@ -5,10 +5,12 @@ import {ProductsAPI} from "@/shared/api";
 import { useAppSelector, useAppDispatch } from '@/app/hooks.ts';
 import { addToCart } from '@/features/cart/cartSlice.ts';
 import { addToFavourites, removeFromFavourites, selectIsFavourite } from '@/features/favourites/favouritesSlice.ts';
+import { fetchCategories, selectCategories } from '@/features/catalog/catalogSlice.ts';
 import { Product } from '@/entities';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
+import { ProductBreadcrumb } from '../../components/ProductBreadcrumb';
 import { ProductGrid } from '../../widgets/product-grid/ProductGrid';
 import { NotificationService } from '@/shared/lib/notifications.ts';
 import { useProductPrice, useCurrency } from '@/hooks/use-currency.ts';
@@ -46,6 +48,7 @@ export function ProductDetail() {
 
   const isFavourite = useAppSelector(selectIsFavourite(product?.id || ''));
   const { convertAndFormat } = useCurrency();
+  const categories = useAppSelector(selectCategories);
 
   const loadProduct = async () => {
     if (!slug) {
@@ -83,6 +86,12 @@ export function ProductDetail() {
       await loadProduct();
     })()
   }, [slug]);
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length]);
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -183,21 +192,7 @@ export function ProductDetail() {
       {/* Breadcrumbs */}
       <div className="bg-muted/30 border-b">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Home className="h-4 w-4" />
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link to="/catalog" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('navigation.catalog', 'Catalog')}
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link to={`/catalog?category=${product.category}`} className="text-muted-foreground hover:text-foreground transition-colors">
-              {product.category}
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="text-foreground font-medium truncate">{product.title}</span>
-          </nav>
+          <ProductBreadcrumb product={product} />
         </div>
       </div>
 
