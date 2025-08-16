@@ -5,6 +5,7 @@ import {ProductsAPI} from "@/shared/api";
 import { useAppSelector, useAppDispatch } from '@/app/hooks.ts';
 import { addToCart } from '@/features/cart/cartSlice.ts';
 import { addToFavourites, removeFromFavourites, selectIsFavourite } from '@/features/favourites/favouritesSlice.ts';
+import { fetchCategories, selectCategories } from '@/features/catalog/catalogSlice.ts';
 import { Product } from '@/entities';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
@@ -46,6 +47,7 @@ export function ProductDetail() {
 
   const isFavourite = useAppSelector(selectIsFavourite(product?.id || ''));
   const { convertAndFormat } = useCurrency();
+  const categories = useAppSelector(selectCategories);
 
   const loadProduct = async () => {
     if (!slug) {
@@ -83,6 +85,12 @@ export function ProductDetail() {
       await loadProduct();
     })()
   }, [slug]);
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(fetchCategories());
+    }
+  }, [dispatch, categories.length]);
 
   const handleAddToCart = async () => {
     if (!product) return;
@@ -192,11 +200,44 @@ export function ProductDetail() {
               {t('navigation.catalog', 'Catalog')}
             </Link>
             <span className="text-muted-foreground">/</span>
-            <Link to={`/catalog?category=${product.category}`} className="text-muted-foreground hover:text-foreground transition-colors">
-              {product.category}
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="text-foreground font-medium truncate">{product.title}</span>
+
+            {(() => {
+              // Find main category
+              const mainCategory = categories.find(cat => cat.slug === product.category && !cat.parentId);
+
+              // Find subcategory if product has one
+              const subcategory = product.subcategory
+                ? categories.find(cat => cat.slug === product.subcategory && cat.parentId)
+                : null;
+
+              return (
+                <>
+                  {/* Main Category */}
+                  <Link
+                    to={`/catalog?category=${product.category}`}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {mainCategory?.name || product.category}
+                  </Link>
+
+                  {/* Subcategory */}
+                  {subcategory && (
+                    <>
+                      <span className="text-muted-foreground">/</span>
+                      <Link
+                        to={`/catalog?category=${product.category}&subcategory=${product.subcategory}`}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {subcategory.name}
+                      </Link>
+                    </>
+                  )}
+
+                  <span className="text-muted-foreground">/</span>
+                  <span className="text-foreground font-medium truncate">{product.title}</span>
+                </>
+              );
+            })()}
           </nav>
         </div>
       </div>
