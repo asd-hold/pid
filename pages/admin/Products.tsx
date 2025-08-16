@@ -104,10 +104,11 @@ export function AdminProducts() {
   const handleDeleteProduct = async (productId: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        // TODO: Implement delete API call
+        await ProductsAPI.deleteProduct(productId);
         setProducts(products.filter(p => p.id !== productId));
       } catch (error) {
         console.error('Failed to delete product:', error);
+        alert('Failed to delete product. Please try again.');
       }
     }
   };
