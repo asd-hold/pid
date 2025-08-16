@@ -10,6 +10,14 @@ import { Product } from '@/entities';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage
+} from '../../components/ui/breadcrumb';
 import { ProductGrid } from '../../widgets/product-grid/ProductGrid';
 import { NotificationService } from '@/shared/lib/notifications.ts';
 import { useProductPrice, useCurrency } from '@/hooks/use-currency.ts';
@@ -191,54 +199,75 @@ export function ProductDetail() {
       {/* Breadcrumbs */}
       <div className="bg-muted/30 border-b">
         <div className="container mx-auto px-4 py-3">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Home className="h-4 w-4" />
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <Link to="/catalog" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('navigation.catalog', 'Catalog')}
-            </Link>
-            <span className="text-muted-foreground">/</span>
-
-            {(() => {
-              // Find main category
-              const mainCategory = categories.find(cat => cat.slug === product.category && !cat.parentId);
-
-              // Find subcategory if product has one
-              const subcategory = product.subcategory
-                ? categories.find(cat => cat.slug === product.subcategory && cat.parentId)
-                : null;
-
-              return (
-                <>
-                  {/* Main Category */}
-                  <Link
-                    to={`/catalog?category=${product.category}`}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {mainCategory?.name || product.category}
+          <Breadcrumb>
+            <BreadcrumbList>
+              {/* Home */}
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/">
+                    <Home className="h-4 w-4" />
                   </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
 
-                  {/* Subcategory */}
-                  {subcategory && (
-                    <>
-                      <span className="text-muted-foreground">/</span>
-                      <Link
-                        to={`/catalog?category=${product.category}&subcategory=${product.subcategory}`}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {subcategory.name}
-                      </Link>
-                    </>
-                  )}
+              {/* Catalog */}
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/catalog">
+                    {t('navigation.catalog', 'Catalog')}
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
 
-                  <span className="text-muted-foreground">/</span>
-                  <span className="text-foreground font-medium truncate">{product.title}</span>
-                </>
-              );
-            })()}
-          </nav>
+              {(() => {
+                // Find main category
+                const mainCategory = categories.find(cat => cat.slug === product.category && !cat.parentId);
+
+                // Find subcategory if product has one
+                const subcategory = product.subcategory
+                  ? categories.find(cat => cat.slug === product.subcategory && cat.parentId)
+                  : null;
+
+                return (
+                  <>
+                    {/* Main Category */}
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link to={`/catalog?category=${product.category}`}>
+                          {mainCategory?.name || product.category}
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+
+                    {/* Subcategory */}
+                    {subcategory && (
+                      <>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                          <BreadcrumbLink asChild>
+                            <Link to={`/catalog?category=${product.category}&subcategory=${product.subcategory}`}>
+                              {subcategory.name}
+                            </Link>
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                      </>
+                    )}
+
+                    <BreadcrumbSeparator />
+
+                    {/* Product Name */}
+                    <BreadcrumbItem>
+                      <BreadcrumbPage className="truncate max-w-[200px] sm:max-w-none">
+                        {product.title}
+                      </BreadcrumbPage>
+                    </BreadcrumbItem>
+                  </>
+                );
+              })()}
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
 
