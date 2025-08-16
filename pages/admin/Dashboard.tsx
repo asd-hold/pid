@@ -316,34 +316,136 @@ export function AdminDashboard() {
         </div>
       </div>
 
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Sales Chart */}
+        <div className="bg-card border rounded-lg p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-foreground">
+              {t('admin.dashboard.salesOverview', 'Sales Overview')}
+            </h2>
+            <Badge variant="secondary">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              +12% vs last month
+            </Badge>
+          </div>
+
+          {/* Simple Chart Representation */}
+          <div className="space-y-4">
+            {[
+              { month: 'Jan', value: 12000, color: 'bg-blue-500' },
+              { month: 'Feb', value: 19000, color: 'bg-green-500' },
+              { month: 'Mar', value: 15000, color: 'bg-purple-500' },
+              { month: 'Apr', value: 22000, color: 'bg-orange-500' },
+              { month: 'May', value: 28000, color: 'bg-red-500' },
+              { month: 'Jun', value: 35000, color: 'bg-indigo-500' }
+            ].map((item, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-sm font-medium text-muted-foreground w-12">{item.month}</span>
+                <div className="flex-1 mx-4">
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className={`${item.color} h-2 rounded-full`}
+                      style={{ width: `${(item.value / 35000) * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <span className="text-sm font-bold text-foreground w-16 text-right">
+                  ${(item.value / 1000).toFixed(0)}k
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Products */}
+        <div className="bg-card border rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-foreground mb-6">
+            {t('admin.dashboard.topProducts', 'Top Products')}
+          </h2>
+
+          <div className="space-y-4">
+            {[
+              { name: 'Wireless Headphones Pro', sales: 156, revenue: 46740, image: 'https://picsum.photos/40/40?random=1' },
+              { name: 'Gaming Laptop RTX', sales: 89, revenue: 142391, image: 'https://picsum.photos/40/40?random=2' },
+              { name: 'Smartphone Ultra 256GB', sales: 67, revenue: 60299, image: 'https://picsum.photos/40/40?random=3' },
+              { name: 'Eco-Friendly Yoga Mat', sales: 234, revenue: 14034, image: 'https://picsum.photos/40/40?random=4' },
+              { name: 'Cotton T-Shirt Pack', sales: 445, revenue: 22245, image: 'https://picsum.photos/40/40?random=5' }
+            ].map((product, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-10 h-10 rounded-lg object-cover"
+                  />
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-foreground">{product.name}</p>
+                    <p className="text-xs text-muted-foreground">{product.sales} sold</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-bold text-foreground">
+                    ${product.revenue.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Performance Overview */}
       <div className="bg-card border rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-foreground">
             {t('admin.dashboard.performance', 'Performance Overview')}
           </h2>
-          <Badge variant="secondary">
-            <TrendingUp className="h-3 w-3 mr-1" />
-            +12% vs last month
-          </Badge>
+          <div className="flex items-center space-x-2">
+            <Badge variant="secondary">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              +12% vs last month
+            </Badge>
+            <select className="text-xs bg-background border rounded px-2 py-1">
+              <option>Last 30 days</option>
+              <option>Last 7 days</option>
+              <option>Last 90 days</option>
+            </select>
+          </div>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center">
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-8 h-8 bg-green-500 rounded-full"></div>
+            </div>
             <p className="text-2xl font-bold text-green-600">98.5%</p>
             <p className="text-sm text-muted-foreground">Uptime</p>
+            <p className="text-xs text-green-600">+0.2% vs last month</p>
           </div>
-          <div className="text-center">
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
+            </div>
             <p className="text-2xl font-bold text-blue-600">2.3s</p>
             <p className="text-sm text-muted-foreground">Avg Load Time</p>
+            <p className="text-xs text-blue-600">-0.1s vs last month</p>
           </div>
-          <div className="text-center">
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-8 h-8 bg-purple-500 rounded-full"></div>
+            </div>
             <p className="text-2xl font-bold text-purple-600">73%</p>
             <p className="text-sm text-muted-foreground">Conversion Rate</p>
+            <p className="text-xs text-purple-600">+5% vs last month</p>
           </div>
-          <div className="text-center">
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <div className="w-8 h-8 bg-orange-500 rounded-full"></div>
+            </div>
             <p className="text-2xl font-bold text-orange-600">4.8</p>
             <p className="text-sm text-muted-foreground">Avg Rating</p>
+            <p className="text-xs text-orange-600">+0.2 vs last month</p>
           </div>
         </div>
       </div>
