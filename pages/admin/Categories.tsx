@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCategories, fetchCategories } from '../../features/catalog/catalogSlice';
 import { Category } from '../../entities';
+import { CategoriesAPI } from '../../shared/api';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
