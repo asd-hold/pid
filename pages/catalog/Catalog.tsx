@@ -28,6 +28,7 @@ import { CatalogFilters } from './CatalogFilters';
 import { CatalogControls } from './CatalogControls';
 import { CatalogPagination } from './CatalogPagination';
 import { SubcategoryNavigation, SubcategoryBreadcrumb } from '../../features/catalog/SubcategoryNavigation';
+import { CategoryBreadcrumb } from '../../components/ProductBreadcrumb';
 import { ProductFilter, ProductSort } from '../../entities';
 import { useDebounce } from '../../hooks/use-debounce';
 import { useSearchParams } from 'react-router-dom';
@@ -233,9 +234,9 @@ export function Catalog() {
           {/* Main Content */}
           <div className="flex-1 space-y-6">
             {/* Breadcrumb */}
-            <SubcategoryBreadcrumb
-              selectedCategory={selectedCategory}
-              selectedSubcategory={selectedSubcategory}
+            <CategoryBreadcrumb
+              categorySlug={selectedCategory || ''}
+              subcategorySlug={selectedSubcategory}
               className="mb-4"
             />
 
