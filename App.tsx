@@ -62,47 +62,51 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-background">
-        <Header />
-        <main>
-          <Routes>
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/*" element={
-              <AdminAuthGuard>
-                <AdminLayout>
-                  <Routes>
-                    <Route index element={<AdminDashboard />} />
-                    <Route path="products" element={<AdminProducts />} />
-                    <Route path="categories" element={<AdminCategories />} />
-                    <Route path="users" element={<AdminUsers />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                    <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
-                    <Route path="settings" element={<PlaceholderPage title="Settings" />} />
-                  </Routes>
-                </AdminLayout>
-              </AdminAuthGuard>
-            } />
+      <Routes>
+        {/* Admin Routes - Separate Layout */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/*" element={
+          <AdminAuthGuard>
+            <AdminLayout>
+              <Routes>
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="categories" element={<AdminCategories />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
+                <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+              </Routes>
+            </AdminLayout>
+          </AdminAuthGuard>
+        } />
 
-            {/* Public Routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/catalog" element={<Catalog />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/favourites" element={<Favourites />} />
-            <Route path="/checkout" element={<PlaceholderPage title="Checkout" />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/orders" element={<PlaceholderPage title="Order History" />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/create-product" element={<PlaceholderPage title="Create Product" />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-        <Toaster />
-      </div>
+        {/* Shop Routes - Main Layout */}
+        <Route path="/*" element={
+          <div className="min-h-screen bg-background">
+            <Header />
+            <main>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/catalog" element={<Catalog />} />
+                <Route path="/categories" element={<Categories />} />
+                <Route path="/product/:slug" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/favourites" element={<Favourites />} />
+                <Route path="/checkout" element={<PlaceholderPage title="Checkout" />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/orders" element={<PlaceholderPage title="Order History" />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/create-product" element={<PlaceholderPage title="Create Product" />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+            <Toaster />
+          </div>
+        } />
+      </Routes>
     </ErrorBoundary>
   );
 }
