@@ -28,6 +28,18 @@ import { Categories } from './pages/categories/Categories';
 // Placeholder pages (will be implemented later)
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
+// Admin Pages
+import {
+  AdminLayout,
+  AdminLogin,
+  AdminDashboard,
+  AdminProducts,
+  AdminCategories,
+  AdminUsers,
+  AdminOrders
+} from './pages/admin';
+import { AdminAuthGuard } from './components/admin/ProtectedAdminRoute';
+
 function App() {
   const dispatch = useAppDispatch();
 
@@ -54,6 +66,25 @@ function App() {
         <Header />
         <main>
           <Routes>
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/*" element={
+              <AdminAuthGuard>
+                <AdminLayout>
+                  <Routes>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="products" element={<AdminProducts />} />
+                    <Route path="categories" element={<AdminCategories />} />
+                    <Route path="users" element={<AdminUsers />} />
+                    <Route path="orders" element={<AdminOrders />} />
+                    <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
+                    <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+                  </Routes>
+                </AdminLayout>
+              </AdminAuthGuard>
+            } />
+
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/categories" element={<Categories />} />
