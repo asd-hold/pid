@@ -21,25 +21,25 @@ interface ProductBreadcrumbProps {
   className?: string;
 }
 
-export function ProductBreadcrumb({ 
-  product, 
-  showProductName = true, 
+export function ProductBreadcrumb({
+  product,
+  showProductName = true,
   includeHome = true,
-  className = '' 
+  className = ''
 }: ProductBreadcrumbProps) {
   const { t } = useTranslation();
   const categories = useAppSelector(selectCategories);
 
   // Find main category
   const mainCategory = categories.find(cat => cat.slug === product.category && !cat.parentId);
-  
+
   // Find subcategory if product has one
-  const subcategory = product.subcategory 
+  const subcategory = product.subcategory
     ? categories.find(cat => cat.slug === product.subcategory && cat.parentId)
     : null;
 
   return (
-    <Breadcrumb className={className}>
+    <Breadcrumb className={className} aria-label={t('navigation.breadcrumb', 'Breadcrumb navigation')}>
       <BreadcrumbList>
         {/* Home */}
         {includeHome && (
@@ -113,25 +113,25 @@ interface CategoryBreadcrumbProps {
   className?: string;
 }
 
-export function CategoryBreadcrumb({ 
-  categorySlug, 
-  subcategorySlug, 
+export function CategoryBreadcrumb({
+  categorySlug,
+  subcategorySlug,
   includeHome = true,
-  className = '' 
+  className = ''
 }: CategoryBreadcrumbProps) {
   const { t } = useTranslation();
   const categories = useAppSelector(selectCategories);
 
   // Find main category
   const mainCategory = categories.find(cat => cat.slug === categorySlug && !cat.parentId);
-  
+
   // Find subcategory if provided
-  const subcategory = subcategorySlug 
+  const subcategory = subcategorySlug
     ? categories.find(cat => cat.slug === subcategorySlug && cat.parentId)
     : null;
 
   return (
-    <Breadcrumb className={className}>
+    <Breadcrumb className={className} aria-label={t('navigation.breadcrumb', 'Breadcrumb navigation')}>
       <BreadcrumbList>
         {/* Home */}
         {includeHome && (
