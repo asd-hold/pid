@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../app/hooks';
 import { selectCategories } from '../../features/catalog/catalogSlice';
 import { Category } from '../../entities';
+import { CategoriesAPI } from '../../shared/api';
 import { Button } from '../../shared/ui/Button';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import {
@@ -45,24 +46,31 @@ export function CategoryForm() {
   });
 
   useEffect(() => {
-    if (isEditing) {
-      // TODO: Load existing category data
-      setLoading(true);
-      setTimeout(() => {
-        // Mock data for editing
-        setFormData({
-          name: 'Sample Category',
-          slug: 'sample-category',
-          description: 'This is a sample category description.',
-          image: 'https://picsum.photos/300/200?random=1',
-          parentId: '',
-          sortOrder: 1,
-          isActive: true
-        });
-        setLoading(false);
-      }, 1000);
+    if (isEditing && id) {
+      const loadCategory = async () => {
+        setLoading(true);
+        try {
+          const category = await CategoriesAPI.getCategory(id);
+          if (category) {
+            setFormData({
+              name: category.name,
+              slug: category.slug,
+              description: category.description,
+              image: category.image,
+              parentId: category.parentId,
+              sortOrder: category.sortOrder,
+              isActive: category.isActive
+            });
+          }
+        } catch (error) {
+          console.error('Failed to load category:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadCategory();
     }
-  }, [isEditing]);
+  }, [isEditing, id]);
 
   // Get main categories for parent selection (excluding current category if editing)
   const mainCategories = categories.filter(cat => 
@@ -115,17 +123,31 @@ export function CategoryForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setSaving(true);
     try {
-      // TODO: Implement save API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const categoryData = {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description,
+        image: formData.image,
+        parentId: formData.parentId || undefined,
+        sortOrder: formData.sortOrder,
+        isActive: formData.isActive
+      };
+
+      if (isEditing && id) {
+        await CategoriesAPI.updateCategory(id, categoryData);
+      } else {
+        await CategoriesAPI.createCategory(categoryData);
+      }
+
       navigate('/admin/categories');
     } catch (error) {
       console.error('Failed to save category:', error);
+      setErrors({ submit: 'Failed to save category. Please try again.' });
     } finally {
       setSaving(false);
     }
