@@ -318,7 +318,13 @@ export function ProductForm() {
             {/* Basic Information */}
             <div className="bg-card border rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-              
+
+              {errors.submit && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-red-800 text-sm">{errors.submit}</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Title *</label>
