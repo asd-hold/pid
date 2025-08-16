@@ -5,8 +5,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from './app/store';
 import { ThemeProvider } from './shared/themes/ThemeProvider';
 // import { AppProvider } from './app/AppProvider';
-// import App from './App';
-import AdminMain from './AdminMain';
+import App from './App';
+// import AdminMain from './AdminMain';
 // import SimpleApp from './SimpleApp';
 import './global.css';
 import './shared/config/i18n';
@@ -18,7 +18,7 @@ root.render(
     <Provider store={store}>
       <ThemeProvider>
         <BrowserRouter>
-          <AdminMain />
+          <App />
         </BrowserRouter>
       </ThemeProvider>
     </Provider>
