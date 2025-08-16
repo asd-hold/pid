@@ -38,6 +38,8 @@ import {
   AdminUsers,
   AdminOrders
 } from './pages/admin';
+import { ProductForm as AdminProductForm } from './pages/admin/ProductForm';
+import { CategoryForm as AdminCategoryForm } from './pages/admin/CategoryForm';
 import { AdminAuthGuard } from './components/admin/ProtectedAdminRoute';
 
 function App() {
@@ -71,7 +73,11 @@ function App() {
               <Routes>
                 <Route index element={<AdminDashboard />} />
                 <Route path="products" element={<AdminProducts />} />
+                <Route path="products/new" element={<AdminProductForm />} />
+                <Route path="products/:id/edit" element={<AdminProductForm />} />
                 <Route path="categories" element={<AdminCategories />} />
+                <Route path="categories/new" element={<AdminCategoryForm />} />
+                <Route path="categories/:id/edit" element={<AdminCategoryForm />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
