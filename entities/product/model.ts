@@ -1,0 +1,65 @@
+export interface Product {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  currency: string;
+  images: string[];
+  category: string;
+  subcategory?: string;
+  tags: string[];
+  rating: number;
+  reviewCount: number;
+  stock: number;
+  sku: string;
+  brand?: string;
+  weight?: number;
+  dimensions?: {
+    length: number;
+    width: number;
+    height: number;
+  };
+  features: string[];
+  specifications: Record<string, string>;
+  isNew: boolean;
+  isFeatured: boolean;
+  isOnSale: boolean;
+  dateAdded: string;
+  dateModified: string;
+}
+
+export interface ProductFilter {
+  category?: string;
+  subcategory?: string;
+  priceMin?: number;
+  priceMax?: number;
+  rating?: number;
+  brand?: string;
+  tags?: string[];
+  isOnSale?: boolean;
+  isNew?: boolean;
+  inStock?: boolean;
+}
+
+export interface ProductSort {
+  field: 'price' | 'rating' | 'dateAdded' | 'title';
+  order: 'asc' | 'desc';
+}
+
+export interface ProductSearchParams {
+  query?: string;
+  filters?: ProductFilter;
+  sort?: ProductSort;
+  page?: number;
+  limit?: number;
+}
+
+export interface ProductsResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+}

@@ -1,0 +1,59 @@
+[data-theme="ocean"] {
+  /* Primary Colors */
+  --color-primary: 200 100% 45%;
+  --color-primary-foreground: 0 0% 100%;
+  --color-primary-hover: 200 100% 40%;
+
+  /* Secondary Colors */
+  --color-secondary: 195 25% 85%;
+  --color-secondary-foreground: 195 25% 25%;
+  --color-secondary-hover: 195 25% 80%;
+
+  /* Accent Colors */
+  --color-accent: 180 100% 50%;
+  --color-accent-foreground: 0 0% 100%;
+
+  /* Background Colors */
+  --color-background: 195 50% 98%;
+  --color-background-alt: 195 50% 95%;
+  --color-surface: 0 0% 100%;
+  --color-surface-alt: 195 50% 95%;
+
+  /* Text Colors */
+  --color-foreground: 195 25% 15%;
+  --color-foreground-muted: 195 15% 45%;
+  --color-foreground-subtle: 195 15% 60%;
+
+  /* Border Colors */
+  --color-border: 195 25% 85%;
+  --color-border-hover: 195 25% 80%;
+
+  /* State Colors */
+  --color-success: 160 84% 39%;
+  --color-success-foreground: 0 0% 100%;
+  --color-warning: 45 93% 47%;
+  --color-warning-foreground: 0 0% 100%;
+  --color-error: 0 84% 60%;
+  --color-error-foreground: 0 0% 100%;
+  --color-info: 195 100% 50%;
+  --color-info-foreground: 0 0% 100%;
+
+  /* Component Specific */
+  --color-card: 0 0% 100%;
+  --color-card-foreground: 195 25% 15%;
+  --color-popover: 0 0% 100%;
+  --color-popover-foreground: 195 25% 15%;
+  --color-muted: 195 50% 95%;
+  --color-muted-foreground: 195 15% 45%;
+
+  /* Interactive Elements */
+  --color-ring: 200 100% 45%;
+  --color-input: 195 25% 85%;
+
+  /* Sizing */
+  --radius: 0.75rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+}

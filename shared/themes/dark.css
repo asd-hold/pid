@@ -1,0 +1,59 @@
+[data-theme="dark"] {
+  /* Primary Colors */
+  --color-primary: 220 100% 60%;
+  --color-primary-foreground: 220 9% 15%;
+  --color-primary-hover: 220 100% 65%;
+
+  /* Secondary Colors */
+  --color-secondary: 220 9% 20%;
+  --color-secondary-foreground: 220 13% 85%;
+  --color-secondary-hover: 220 9% 25%;
+
+  /* Accent Colors */
+  --color-accent: 220 100% 60%;
+  --color-accent-foreground: 220 9% 15%;
+
+  /* Background Colors */
+  --color-background: 220 9% 9%;
+  --color-background-alt: 220 9% 12%;
+  --color-surface: 220 9% 12%;
+  --color-surface-alt: 220 9% 15%;
+
+  /* Text Colors */
+  --color-foreground: 220 13% 91%;
+  --color-foreground-muted: 220 9% 65%;
+  --color-foreground-subtle: 220 9% 46%;
+
+  /* Border Colors */
+  --color-border: 220 9% 20%;
+  --color-border-hover: 220 9% 25%;
+
+  /* State Colors */
+  --color-success: 142 76% 45%;
+  --color-success-foreground: 0 0% 100%;
+  --color-warning: 38 92% 60%;
+  --color-warning-foreground: 0 0% 100%;
+  --color-error: 0 84% 65%;
+  --color-error-foreground: 0 0% 100%;
+  --color-info: 217 91% 65%;
+  --color-info-foreground: 0 0% 100%;
+
+  /* Component Specific */
+  --color-card: 220 9% 12%;
+  --color-card-foreground: 220 13% 91%;
+  --color-popover: 220 9% 12%;
+  --color-popover-foreground: 220 13% 91%;
+  --color-muted: 220 9% 15%;
+  --color-muted-foreground: 220 9% 65%;
+
+  /* Interactive Elements */
+  --color-ring: 220 100% 60%;
+  --color-input: 220 9% 20%;
+
+  /* Shadows (adjusted for dark theme) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+}
