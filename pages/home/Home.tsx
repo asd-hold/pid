@@ -12,6 +12,7 @@ import {
 import { HeroSlider } from '../../widgets/hero-slider/HeroSlider';
 import { ProductGrid } from '../../widgets/product-grid/ProductGrid';
 import { CategoryGrid } from '../../widgets/category-grid/CategoryGrid';
+import { SubcategoryShowcase, SubcategoryShowcaseCompact } from '../../widgets/subcategory-showcase/SubcategoryShowcase';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Button } from '../../shared/ui/Button';
 import { Link } from 'react-router-dom';
@@ -47,6 +48,13 @@ export function Home() {
             </p>
           </div>
           <CategoryGrid />
+        </div>
+      </section>
+
+      {/* Subcategory Showcase */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <SubcategoryShowcase />
         </div>
       </section>
 
