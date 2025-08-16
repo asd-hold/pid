@@ -15,7 +15,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 import { Home } from './pages/home/Home';
-import {NotFound} from './pages/NotFound';
+import NotFound from './pages/NotFound';
 import { Login } from './pages/auth/Login';
 import { Register } from './pages/auth/Register';
 import { Profile } from './pages/profile/Profile';
