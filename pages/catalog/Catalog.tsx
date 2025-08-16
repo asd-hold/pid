@@ -234,11 +234,13 @@ export function Catalog() {
           {/* Main Content */}
           <div className="flex-1 space-y-6">
             {/* Breadcrumb */}
-            <CategoryBreadcrumb
-              categorySlug={selectedCategory || ''}
-              subcategorySlug={selectedSubcategory}
-              className="mb-4"
-            />
+            {selectedCategory && (
+              <CategoryBreadcrumb
+                categorySlug={selectedCategory}
+                subcategorySlug={selectedSubcategory}
+                className="mb-4"
+              />
+            )}
 
             {/* Mobile Navigation & Filters */}
             <div className="lg:hidden space-y-4">
