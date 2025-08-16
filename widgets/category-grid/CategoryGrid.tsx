@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { fetchCategories, selectCategories, selectCategoriesLoading } from '../../features/catalog/catalogSlice';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
+import { Badge } from '../../components/ui/badge';
+import { ChevronRight } from 'lucide-react';
 
 export function CategoryGrid() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+
   const categories = useAppSelector(selectCategories);
   const loading = useAppSelector(selectCategoriesLoading);
 
@@ -17,6 +20,18 @@ export function CategoryGrid() {
       dispatch(fetchCategories());
     }
   }, [dispatch, categories.length]);
+
+  // Get main categories (no parent)
+  const mainCategories = categories.filter(cat => !cat.parentId && cat.isActive)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+    .slice(0, 6);
+
+  // Get subcategories for a given parent
+  const getSubcategories = (parentId: string) => {
+    return categories.filter(cat => cat.parentId === parentId && cat.isActive)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .slice(0, 4); // Show max 4 subcategories in hover
+  };
 
   if (loading) {
     return (
@@ -34,43 +49,98 @@ export function CategoryGrid() {
     );
   }
 
-  const displayCategories = categories.slice(0, 6);
-
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      {displayCategories.map((category) => (
-        <Link
-          key={category.id}
-          to={`/catalog?category=${category.slug}`}
-          className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-theme-md transition-all hover:scale-105"
-        >
-          <div className="aspect-square relative overflow-hidden bg-muted">
-            {category.image ? (
-              <img
-                src={category.image}
-                alt={category.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
-                <div className="w-12 h-12 text-primary">
-                  <CategoryIcon categorySlug={category.slug} />
+      {mainCategories.map((category) => {
+        const subcategories = getSubcategories(category.id);
+        const isHovered = hoveredCategory === category.id;
+
+        return (
+          <div
+            key={category.id}
+            className="relative"
+            onMouseEnter={() => setHoveredCategory(category.id)}
+            onMouseLeave={() => setHoveredCategory(null)}
+          >
+            <Link
+              to={`/catalog?category=${category.slug}`}
+              className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-theme-md transition-all hover:scale-105 block"
+            >
+              <div className="aspect-square relative overflow-hidden bg-muted">
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-accent/10">
+                    <div className="w-12 h-12 text-primary">
+                      <CategoryIcon categorySlug={category.slug} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Subcategory count indicator */}
+                {subcategories.length > 0 && (
+                  <div className="absolute top-2 right-2">
+                    <Badge variant="secondary" className="text-xs">
+                      +{subcategories.length}
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 text-center">
+                <h3 className="font-medium text-foreground group-hover:text-primary transition-colors mb-1">
+                  {category.name}
+                </h3>
+                <p className="text-sm text-foreground-muted">
+                  {category.productCount} {category.productCount === 1 ? t('product.title').toLowerCase() : t('product.products').toLowerCase()}
+                </p>
+              </div>
+            </Link>
+
+            {/* Subcategories Dropdown */}
+            {isHovered && subcategories.length > 0 && (
+              <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-theme-lg p-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="space-y-2">
+                  <div className="text-xs font-medium text-muted-foreground mb-2">
+                    {t('categories.subcategories', 'Subcategories')}:
+                  </div>
+                  {subcategories.map((subcat) => (
+                    <Link
+                      key={subcat.id}
+                      to={`/catalog?category=${category.slug}&subcategory=${subcat.slug}`}
+                      className="flex items-center justify-between px-2 py-1 rounded text-sm hover:bg-muted transition-colors group/sub"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="text-foreground group-hover/sub:text-primary transition-colors">
+                        {subcat.name}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <Badge variant="outline" className="text-xs">
+                          {subcat.productCount}
+                        </Badge>
+                        <ChevronRight className="h-3 w-3 text-muted-foreground group-hover/sub:text-primary transition-colors" />
+                      </div>
+                    </Link>
+                  ))}
+                  {categories.filter(cat => cat.parentId === category.id && cat.isActive).length > 4 && (
+                    <Link
+                      to={`/categories`}
+                      className="flex items-center justify-center px-2 py-1 text-xs text-primary hover:bg-primary/10 rounded transition-colors"
+                    >
+                      {t('categories.viewAll', 'View All')}
+                    </Link>
+                  )}
                 </div>
               </div>
             )}
           </div>
-          
-          <div className="p-4 text-center">
-            <h3 className="font-medium text-foreground group-hover:text-primary transition-colors mb-1">
-              {category.name}
-            </h3>
-            <p className="text-sm text-foreground-muted">
-              {category.productCount} {category.productCount === 1 ? t('product.title').toLowerCase() : t('product.products').toLowerCase()}
-            </p>
-          </div>
-        </Link>
-      ))}
+        );
+      })}
     </div>
   );
 }
