@@ -313,5 +313,11 @@
     "new": "New Arrivals",
     "newDesc": "Check out our latest products",
     "allCategories": "All Categories"
+  },
+  "subcategories": {
+    "explore": "Explore by Category",
+    "subtitle": "Browse our organized product categories",
+    "popular": "Popular Subcategories",
+    "noSubcategories": "No subcategories available"
   }
 }
