@@ -171,10 +171,10 @@ export function AdminLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -183,14 +183,14 @@ export function AdminLayout() {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:static lg:inset-0`}>
+      } lg:static lg:inset-0 lg:flex-shrink-0`}>
         <SidebarContent />
       </div>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="bg-card border-b px-4 py-3 lg:px-6">
+        <header className="bg-card border-b px-4 py-3 lg:px-6 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
@@ -199,7 +199,7 @@ export function AdminLayout() {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              
+
               {/* Search */}
               <div className="relative ml-4 flex-1 max-w-lg">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -216,8 +216,8 @@ export function AdminLayout() {
               <button className="relative p-2 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
                 <Bell className="h-5 w-5" />
                 {unreadNotifications > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0"
                   >
                     {unreadNotifications}
@@ -241,8 +241,8 @@ export function AdminLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="h-full w-full">
             <Outlet />
           </div>
         </main>
