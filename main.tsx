@@ -6,6 +6,7 @@ import { store } from './app/store';
 import { ThemeProvider } from './shared/themes/ThemeProvider';
 // import { AppProvider } from './app/AppProvider';
 import App from './App';
+import AppDemo from './AppDemo';
 // import SimpleApp from './SimpleApp';
 import './global.css';
 import './shared/config/i18n';
@@ -17,7 +18,7 @@ root.render(
     <Provider store={store}>
       <ThemeProvider>
         <BrowserRouter>
-          <App />
+          <AppDemo />
         </BrowserRouter>
       </ThemeProvider>
     </Provider>
