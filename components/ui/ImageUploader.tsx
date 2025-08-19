@@ -87,41 +87,44 @@ export function ImageUploader({
 
     // Upload files if onUpload is provided
     if (onUpload) {
-      // Process uploads sequentially to avoid state conflicts
-      for (let i = 0; i < newImages.length; i++) {
-        const newImage = newImages[i];
-        const file = newImage.file!;
+      // Process uploads sequentially
+      const processUploads = async () => {
+        let currentImages = [...images, ...newImages];
 
-        try {
-          const uploadedUrl = await onUpload(file);
+        for (let i = 0; i < newImages.length; i++) {
+          const newImage = newImages[i];
+          const file = newImage.file!;
 
-          // Update specific image with uploaded URL
-          onChange(currentImages =>
-            currentImages.map(img =>
+          try {
+            const uploadedUrl = await onUpload(file);
+
+            // Update current images array
+            currentImages = currentImages.map(img =>
               img.id === newImage.id
                 ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
                 : img
-            )
-          );
-        } catch (error) {
-          // Update specific image with error
-          onChange(currentImages =>
-            currentImages.map(img =>
+            );
+            onChange(currentImages);
+          } catch (error) {
+            // Update with error
+            currentImages = currentImages.map(img =>
               img.id === newImage.id
                 ? { ...img, isUploading: false, uploadError: 'Upload failed' }
                 : img
-            )
-          );
+            );
+            onChange(currentImages);
+          }
         }
-      }
+      };
+
+      processUploads();
     } else {
       // No upload function - mark as completed
-      onChange(currentImages =>
-        currentImages.map(img => {
-          const matchingNew = newImages.find(newImg => newImg.id === img.id);
-          return matchingNew ? { ...img, isUploading: false } : img;
-        })
-      );
+      const finalImages = [...images, ...newImages].map(img => {
+        const matchingNew = newImages.find(newImg => newImg.id === img.id);
+        return matchingNew ? { ...img, isUploading: false } : img;
+      });
+      onChange(finalImages);
     }
   };
 
