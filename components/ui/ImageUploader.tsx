@@ -93,35 +93,32 @@ export function ImageUploader({
         
         try {
           const uploadedUrl = await onUpload(file);
-          
+
           // Update with uploaded URL
-          onChange(prevImages => 
-            prevImages.map(img => 
-              img.id === newImage.id 
-                ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
-                : img
-            )
+          const updatedImages = images.map(img =>
+            img.id === newImage.id
+              ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
+              : img
           );
+          onChange(updatedImages);
         } catch (error) {
           // Update with error
-          onChange(prevImages => 
-            prevImages.map(img => 
-              img.id === newImage.id 
-                ? { ...img, isUploading: false, uploadError: 'Upload failed' }
-                : img
-            )
+          const updatedImages = images.map(img =>
+            img.id === newImage.id
+              ? { ...img, isUploading: false, uploadError: 'Upload failed' }
+              : img
           );
+          onChange(updatedImages);
         }
       }
     } else {
       // No upload function - use local URLs
-      onChange(prev => 
-        prev.map(img => 
-          newImages.find(newImg => newImg.id === img.id)
-            ? { ...img, isUploading: false }
-            : img
-        )
+      const updatedImages = images.map(img =>
+        newImages.find(newImg => newImg.id === img.id)
+          ? { ...img, isUploading: false }
+          : img
       );
+      onChange(updatedImages);
     }
   };
 
