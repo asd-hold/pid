@@ -173,6 +173,9 @@ export function ProductForm() {
 
     setSaving(true);
     try {
+      // Convert ImageItem array to string array for API
+      const imageUrls = formData.images.map(img => img.url);
+
       const productData = {
         title: formData.title,
         slug: formData.slug,
@@ -180,7 +183,7 @@ export function ProductForm() {
         price: formData.price,
         originalPrice: formData.originalPrice,
         currency: formData.currency,
-        images: formData.images,
+        images: imageUrls,
         category: formData.category,
         subcategory: formData.subcategory,
         tags: formData.tags,
@@ -212,74 +215,13 @@ export function ProductForm() {
     }
   };
 
-  const addImage = () => {
-    if (currentImageUrl.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, currentImageUrl.trim()]
-      }));
-      setCurrentImageUrl('');
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    setUploadingImages(true);
-    const newImages: string[] = [];
-
+  const handleImageUpload = async (file: File): Promise<string> => {
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          alert(`File ${file.name} is not an image`);
-          continue;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          alert(`File ${file.name} is too large. Maximum size is 5MB`);
-          continue;
-        }
-
-        // Convert to base64
-        const base64 = await fileToBase64(file);
-        newImages.push(base64);
-      }
-
-      if (newImages.length > 0) {
-        setFormData(prev => ({
-          ...prev,
-          images: [...prev.images, ...newImages]
-        }));
-      }
+      return await ImageUploadAPI.uploadImage(file);
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Error uploading images. Please try again.');
-    } finally {
-      setUploadingImages(false);
-      // Reset file input
-      event.target.value = '';
+      console.error('Failed to upload image:', error);
+      throw error;
     }
-  };
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
   };
 
   const addTag = () => {
