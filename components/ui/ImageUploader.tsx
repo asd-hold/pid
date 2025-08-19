@@ -51,80 +51,72 @@ export function ImageUploader({
 
   const handleFileUpload = async (files: FileList) => {
     if (disabled) return;
-    
+
     const validFiles: File[] = [];
-    
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const error = validateFile(file);
-      
+
       if (error) {
         alert(error);
         continue;
       }
-      
+
       if (images.length + validFiles.length >= maxImages) {
         alert(`Maximum ${maxImages} images allowed`);
         break;
       }
-      
+
       validFiles.push(file);
     }
 
     if (validFiles.length === 0) return;
 
-    // Create initial image items with loading state
-    const newImages: ImageItem[] = validFiles.map(file => ({
-      id: generateId(),
-      url: URL.createObjectURL(file),
-      file,
-      isMain: images.length === 0, // First image is main
-      isUploading: true
-    }));
-
-    // Add to images immediately to show loading state
-    onChange([...images, ...newImages]);
-
-    // Upload files if onUpload is provided
-    if (onUpload) {
-      // Process uploads sequentially
-      const processUploads = async () => {
-        let currentImages = [...images, ...newImages];
-
-        for (let i = 0; i < newImages.length; i++) {
-          const newImage = newImages[i];
-          const file = newImage.file!;
-
-          try {
-            const uploadedUrl = await onUpload(file);
-
-            // Update current images array
-            currentImages = currentImages.map(img =>
-              img.id === newImage.id
-                ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
-                : img
-            );
-            onChange(currentImages);
-          } catch (error) {
-            // Update with error
-            currentImages = currentImages.map(img =>
-              img.id === newImage.id
-                ? { ...img, isUploading: false, uploadError: 'Upload failed' }
-                : img
-            );
-            onChange(currentImages);
-          }
-        }
+    // Process files one by one to avoid state conflicts
+    for (const file of validFiles) {
+      const newImage: ImageItem = {
+        id: generateId(),
+        url: URL.createObjectURL(file),
+        file,
+        isMain: images.length === 0,
+        isUploading: true
       };
 
-      processUploads();
-    } else {
-      // No upload function - mark as completed
-      const finalImages = [...images, ...newImages].map(img => {
-        const matchingNew = newImages.find(newImg => newImg.id === img.id);
-        return matchingNew ? { ...img, isUploading: false } : img;
-      });
-      onChange(finalImages);
+      // Add image with loading state
+      const imagesWithNew = [...images, newImage];
+      onChange(imagesWithNew);
+
+      // Upload if onUpload is provided
+      if (onUpload) {
+        try {
+          const uploadedUrl = await onUpload(file);
+
+          // Update with uploaded URL
+          const updatedImages = imagesWithNew.map(img =>
+            img.id === newImage.id
+              ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
+              : img
+          );
+          onChange(updatedImages);
+        } catch (error) {
+          // Update with error
+          const updatedImages = imagesWithNew.map(img =>
+            img.id === newImage.id
+              ? { ...img, isUploading: false, uploadError: 'Upload failed' }
+              : img
+          );
+          onChange(updatedImages);
+        }
+      } else {
+        // No upload function - mark as completed
+        const updatedImages = imagesWithNew.map(img =>
+          img.id === newImage.id
+            ? { ...img, isUploading: false }
+            : img
+        );
+        onChange(updatedImages);
+      }
     }
   };
 
