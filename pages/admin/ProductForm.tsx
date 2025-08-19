@@ -14,7 +14,8 @@ import {
   Upload,
   X,
   Plus,
-  AlertTriangle
+  AlertTriangle,
+  Package
 } from 'lucide-react';
 
 interface ProductFormData {
