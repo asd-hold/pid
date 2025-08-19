@@ -105,10 +105,11 @@ export class ProductsAPI {
 
   static async createProduct(product: Omit<Product, 'id' | 'dateAdded' | 'dateModified'>): Promise<Product> {
     await delay();
-    
+
     const products = Storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, []);
     const newProduct: Product = {
       ...product,
+      status: product.status || 'draft',
       id: Date.now().toString(),
       dateAdded: new Date().toISOString(),
       dateModified: new Date().toISOString(),
@@ -180,6 +181,9 @@ export class ProductsAPI {
         const inStock = product.stock > 0;
         if (inStock !== filters.inStock) return false;
       }
+
+      // Status filtering
+      if (filters.status && (product.status || 'published') !== filters.status) return false;
 
       // Tags filtering
       if (filters.tags && filters.tags.length > 0) {
