@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../app/hooks';
 import { selectCategories } from '../../features/catalog/catalogSlice';
 import { Product } from '../../entities';
-import { ProductsAPI } from '../../shared/api';
+import { ProductsAPI, ImageUploadAPI } from '../../shared/api';
+import { ImageUploader, ImageItem } from '../../components/ui/ImageUploader';
 import { Button } from '../../shared/ui/Button';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Badge } from '../../components/ui/badge';
@@ -25,7 +26,7 @@ interface ProductFormData {
   price: number;
   originalPrice?: number;
   currency: string;
-  images: string[];
+  images: ImageItem[];
   category: string;
   subcategory?: string;
   tags: string[];
@@ -49,8 +50,6 @@ export function ProductForm() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentImageUrl, setCurrentImageUrl] = useState('');
-  const [uploadingImages, setUploadingImages] = useState(false);
   const [currentTag, setCurrentTag] = useState('');
   const [currentFeature, setCurrentFeature] = useState('');
   const [specKey, setSpecKey] = useState('');
@@ -84,6 +83,13 @@ export function ProductForm() {
         try {
           const product = await ProductsAPI.getProduct(id);
           if (product) {
+            // Convert existing image URLs to ImageItem format
+            const imageItems: ImageItem[] = product.images.map((url, index) => ({
+              id: `existing-${index}-${Date.now()}`,
+              url,
+              isMain: index === 0
+            }));
+
             setFormData({
               title: product.title,
               slug: product.slug,
@@ -91,7 +97,7 @@ export function ProductForm() {
               price: product.price,
               originalPrice: product.originalPrice,
               currency: product.currency,
-              images: product.images,
+              images: imageItems,
               category: product.category,
               subcategory: product.subcategory,
               tags: product.tags,
