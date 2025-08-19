@@ -441,7 +441,16 @@ export function ProductForm() {
 
               <ImageUploader
                 images={formData.images}
-                onChange={(images) => handleInputChange('images', images)}
+                onChange={(images) => {
+                  if (typeof images === 'function') {
+                    setFormData(prev => ({
+                      ...prev,
+                      images: images(prev.images)
+                    }));
+                  } else {
+                    handleInputChange('images', images);
+                  }
+                }}
                 onUpload={handleImageUpload}
                 maxImages={10}
                 maxFileSize={5}
