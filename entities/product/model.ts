@@ -23,6 +23,7 @@ export interface Product {
   };
   features: string[];
   specifications: Record<string, string>;
+  status: 'draft' | 'published' | 'archived' | 'discontinued';
   isNew: boolean;
   isFeatured: boolean;
   isOnSale: boolean;
@@ -38,6 +39,7 @@ export interface ProductFilter {
   rating?: number;
   brand?: string;
   tags?: string[];
+  status?: 'draft' | 'published' | 'archived' | 'discontinued';
   isOnSale?: boolean;
   isNew?: boolean;
   inStock?: boolean;
