@@ -13,7 +13,8 @@ import {
   Save,
   ArrowLeft,
   Plus,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 interface ProductFormData {
