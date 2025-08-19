@@ -31,6 +31,7 @@ export function AdminProducts() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'stock' | 'dateAdded'>('dateAdded');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
@@ -64,7 +65,8 @@ export function AdminProducts() {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.sku.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStatus = selectedStatus === '' || product.status === selectedStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -93,6 +95,21 @@ export function AdminProducts() {
       return { label: 'Low Stock', color: 'secondary' as const };
     } else {
       return { label: 'In Stock', color: 'default' as const };
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'published':
+        return { label: 'Published', color: 'default' as const };
+      case 'draft':
+        return { label: 'Draft', color: 'secondary' as const };
+      case 'archived':
+        return { label: 'Archived', color: 'outline' as const };
+      case 'discontinued':
+        return { label: 'Discontinued', color: 'destructive' as const };
+      default:
+        return { label: status, color: 'secondary' as const };
     }
   };
 
@@ -143,7 +160,7 @@ export function AdminProducts() {
 
       {/* Filters */}
       <div className="bg-card border rounded-lg p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -168,6 +185,19 @@ export function AdminProducts() {
                 {category.name}
               </option>
             ))}
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-2 bg-background border rounded-md text-sm"
+          >
+            <option value="">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+            <option value="discontinued">Discontinued</option>
           </select>
 
           {/* Sort By */}
@@ -210,9 +240,9 @@ export function AdminProducts() {
           <div className="flex items-center">
             <AlertTriangle className="h-8 w-8 text-orange-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-muted-foreground">Low Stock</p>
+              <p className="text-sm font-medium text-muted-foreground">Published</p>
               <p className="text-2xl font-bold text-foreground">
-                {products.filter(p => p.stock > 0 && p.stock <= 5).length}
+                {products.filter(p => (p.status || 'published') === 'published').length}
               </p>
             </div>
           </div>
@@ -260,6 +290,9 @@ export function AdminProducts() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Stock
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Stock Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
@@ -322,6 +355,11 @@ export function AdminProducts() {
                     <td className="px-6 py-4">
                       <Badge variant={stockStatus.color}>
                         {stockStatus.label}
+                      </Badge>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant={getStatusBadge(product.status || 'published').color}>
+                        {getStatusBadge(product.status || 'published').label}
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
