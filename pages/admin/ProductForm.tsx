@@ -33,6 +33,7 @@ interface ProductFormData {
   brand: string;
   features: string[];
   specifications: Record<string, string>;
+  status: 'draft' | 'published' | 'archived' | 'discontinued';
   isNew: boolean;
   isFeatured: boolean;
   isOnSale: boolean;
@@ -69,6 +70,7 @@ export function ProductForm() {
     brand: '',
     features: [],
     specifications: {},
+    status: 'draft',
     isNew: false,
     isFeatured: false,
     isOnSale: false
@@ -104,6 +106,7 @@ export function ProductForm() {
               brand: product.brand || '',
               features: product.features,
               specifications: product.specifications,
+              status: product.status || 'published',
               isNew: product.isNew,
               isFeatured: product.isFeatured,
               isOnSale: product.isOnSale
@@ -190,6 +193,7 @@ export function ProductForm() {
         brand: formData.brand,
         features: formData.features,
         specifications: formData.specifications,
+        status: formData.status,
         isNew: formData.isNew,
         isFeatured: formData.isFeatured,
         isOnSale: formData.isOnSale,
@@ -507,40 +511,66 @@ export function ProductForm() {
               </div>
             </div>
 
-            {/* Status */}
+            {/* Product Status */}
             <div className="bg-card border rounded-lg p-6">
-              <h2 className="text-lg font-semibold mb-4">Status</h2>
-              
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isNew}
-                    onChange={(e) => handleInputChange('isNew', e.target.checked)}
-                    className="mr-2"
-                  />
-                  New Product
-                </label>
+              <h2 className="text-lg font-semibold mb-4">Publication Status</h2>
 
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isFeatured}
-                    onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
-                    className="mr-2"
-                  />
-                  Featured Product
-                </label>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value as any)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                    <option value="discontinued">Discontinued</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.status === 'draft' && 'Product is hidden from customers and can be edited'}
+                    {formData.status === 'published' && 'Product is visible to customers and available for purchase'}
+                    {formData.status === 'archived' && 'Product is hidden but data is preserved'}
+                    {formData.status === 'discontinued' && 'Product is no longer available but visible for reference'}
+                  </p>
+                </div>
 
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isOnSale}
-                    onChange={(e) => handleInputChange('isOnSale', e.target.checked)}
-                    className="mr-2"
-                  />
-                  On Sale
-                </label>
+                <hr className="border-border" />
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium">Additional Flags</h3>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isNew}
+                      onChange={(e) => handleInputChange('isNew', e.target.checked)}
+                      className="mr-2"
+                    />
+                    New Product
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isFeatured}
+                      onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
+                      className="mr-2"
+                    />
+                    Featured Product
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isOnSale}
+                      onChange={(e) => handleInputChange('isOnSale', e.target.checked)}
+                      className="mr-2"
+                    />
+                    On Sale
+                  </label>
+                </div>
               </div>
             </div>
 
