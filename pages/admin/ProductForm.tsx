@@ -442,105 +442,14 @@ export function ProductForm() {
             <div className="bg-card border rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-4">Product Images</h2>
 
-              <div className="space-y-4">
-                {/* File Upload */}
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    id="image-upload"
-                    disabled={uploadingImages}
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className={`cursor-pointer block ${uploadingImages ? 'opacity-50' : ''}`}
-                  >
-                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm font-medium text-foreground mb-1">
-                      {uploadingImages ? 'Uploading...' : 'Upload Images'}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Click to upload or drag and drop<br />
-                      PNG, JPG, GIF up to 5MB each
-                    </p>
-                  </label>
-                </div>
-
-                {/* URL Input */}
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">Or add by URL</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={currentImageUrl}
-                    onChange={(e) => setCurrentImageUrl(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-md"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  <Button type="button" onClick={addImage} disabled={!currentImageUrl.trim()}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add URL
-                  </Button>
-                </div>
-
-                {/* Image Preview Grid */}
-                {formData.images.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium text-foreground mb-3">
-                      Uploaded Images ({formData.images.length})
-                    </p>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {formData.images.map((image, index) => (
-                        <div key={index} className="relative group">
-                          <img
-                            src={image}
-                            alt={`Product ${index + 1}`}
-                            className="w-full h-24 object-cover rounded border bg-muted"
-                            onError={(e) => {
-                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIxIDlWN0MxMSA3IDkgNS42OTggOSA0VjNIMTVWMkg5VjFIOFYySDJWM0g4VjRDOCA2LjMwMiAxMCA4IDIxIDhWOUgyMVpNOSAxNEg3VjEySDlWMTRaTTE2IDE0SDE0VjEySDI2VjE0SDE2WiIgZmlsbD0iY3VycmVudENvbG9yIi8+Cjwvc3ZnPgo=';
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 rounded flex items-center justify-center">
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="opacity-0 group-hover:opacity-100 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center transition-all duration-200 hover:bg-red-600"
-                              title="Remove image"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                          {index === 0 && (
-                            <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded">
-                              Main
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      First image will be used as the main product image
-                    </p>
-                  </div>
-                )}
-
-                {formData.images.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Package className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No images uploaded yet</p>
-                  </div>
-                )}
-              </div>
+              <ImageUploader
+                images={formData.images}
+                onChange={(images) => handleInputChange('images', images)}
+                onUpload={handleImageUpload}
+                maxImages={10}
+                maxFileSize={5}
+                disabled={saving}
+              />
             </div>
           </div>
 
