@@ -12,11 +12,8 @@ import { Badge } from '../../components/ui/badge';
 import {
   Save,
   ArrowLeft,
-  Upload,
-  X,
   Plus,
-  AlertTriangle,
-  Package
+  AlertTriangle
 } from 'lucide-react';
 
 interface ProductFormData {
