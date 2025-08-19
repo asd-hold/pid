@@ -130,6 +130,18 @@ export function AdminProducts() {
     }
   };
 
+  const handleStatusChange = async (productId: string, newStatus: 'draft' | 'published' | 'archived' | 'discontinued') => {
+    try {
+      await ProductsAPI.updateProduct(productId, { status: newStatus });
+      setProducts(products.map(p =>
+        p.id === productId ? { ...p, status: newStatus } : p
+      ));
+    } catch (error) {
+      console.error('Failed to update product status:', error);
+      alert('Failed to update product status. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -358,9 +370,21 @@ export function AdminProducts() {
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={getStatusBadge(product.status || 'published').color}>
-                        {getStatusBadge(product.status || 'published').label}
-                      </Badge>
+                      <select
+                        value={product.status || 'published'}
+                        onChange={(e) => handleStatusChange(product.id, e.target.value as any)}
+                        className={`px-2 py-1 rounded-md text-xs font-medium border-0 cursor-pointer ${
+                          getStatusBadge(product.status || 'published').color === 'default' ? 'bg-primary text-primary-foreground' :
+                          getStatusBadge(product.status || 'published').color === 'secondary' ? 'bg-secondary text-secondary-foreground' :
+                          getStatusBadge(product.status || 'published').color === 'destructive' ? 'bg-destructive text-destructive-foreground' :
+                          'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                        <option value="archived">Archived</option>
+                        <option value="discontinued">Discontinued</option>
+                      </select>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
