@@ -87,38 +87,41 @@ export function ImageUploader({
 
     // Upload files if onUpload is provided
     if (onUpload) {
+      // Process uploads sequentially to avoid state conflicts
       for (let i = 0; i < newImages.length; i++) {
         const newImage = newImages[i];
         const file = newImage.file!;
-        
+
         try {
           const uploadedUrl = await onUpload(file);
 
-          // Update with uploaded URL
-          const updatedImages = images.map(img =>
-            img.id === newImage.id
-              ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
-              : img
+          // Update specific image with uploaded URL
+          onChange(currentImages =>
+            currentImages.map(img =>
+              img.id === newImage.id
+                ? { ...img, url: uploadedUrl, isUploading: false, file: undefined }
+                : img
+            )
           );
-          onChange(updatedImages);
         } catch (error) {
-          // Update with error
-          const updatedImages = images.map(img =>
-            img.id === newImage.id
-              ? { ...img, isUploading: false, uploadError: 'Upload failed' }
-              : img
+          // Update specific image with error
+          onChange(currentImages =>
+            currentImages.map(img =>
+              img.id === newImage.id
+                ? { ...img, isUploading: false, uploadError: 'Upload failed' }
+                : img
+            )
           );
-          onChange(updatedImages);
         }
       }
     } else {
-      // No upload function - use local URLs
-      const updatedImages = images.map(img =>
-        newImages.find(newImg => newImg.id === img.id)
-          ? { ...img, isUploading: false }
-          : img
+      // No upload function - mark as completed
+      onChange(currentImages =>
+        currentImages.map(img => {
+          const matchingNew = newImages.find(newImg => newImg.id === img.id);
+          return matchingNew ? { ...img, isUploading: false } : img;
+        })
       );
-      onChange(updatedImages);
     }
   };
 
