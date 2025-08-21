@@ -66,7 +66,10 @@ export function useCurrency() {
     // Check if current currency needs special formatting
     isZeroDecimalCurrency: (): boolean => selectedCurrency.code === 'JPY',
 
-    // Get flag emoji for current currency
+    // Get flag props for current currency (use with CurrencyFlag component)
+    getFlagProps: () => CurrencyUtils.getCurrencyFlagProps(selectedCurrency.code),
+
+    // @deprecated Use getFlagProps() with CurrencyFlag component instead
     getFlag: (): string => CurrencyUtils.getCurrencyFlag(selectedCurrency.code),
   }), [selectedCurrency]);
 }
