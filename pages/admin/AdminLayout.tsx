@@ -20,7 +20,9 @@ import {
   Search,
   Home,
   ChevronDown,
-  Activity
+  Activity,
+  Mail,
+  Truck
 } from 'lucide-react';
 
 const adminNavigation = [
