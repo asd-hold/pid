@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Plus, Save, Trash2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../../shared/ui/Button';
 import { ImageUploader, ImageItem } from '../../components/ui/ImageUploader';
-import { SettingsAPI, BannerSettings, AdminSettings } from '../../shared/api';
+import { SettingsAPI } from '../../shared/api';
+import type { BannerSettings, AdminSettings as AdminSettingsModel } from '../../shared/api';
 
 interface BannerForm extends BannerSettings {
   desktopImages: ImageItem[];
@@ -19,7 +20,7 @@ function firstUrl(items: ImageItem[]): string | undefined {
 
 export function AdminSettings() {
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<AdminSettings | null>(null);
+  const [settings, setSettings] = useState<AdminSettingsModel | null>(null);
   const [banners, setBanners] = useState<BannerForm[]>([]);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export function AdminSettings() {
     if (!settings) return;
     setSaving(true);
     try {
-      const next: AdminSettings = {
+      const next: AdminSettingsModel = {
         ...settings,
         banners: banners.map(b => ({
           id: b.id,
