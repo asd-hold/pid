@@ -59,12 +59,12 @@ const adminNavigation = [
   {
     name: 'Contacts',
     href: '/admin/contacts',
-    icon: Users
+    icon: Mail
   },
   {
     name: 'Shipping',
     href: '/admin/shipping',
-    icon: Activity
+    icon: Truck
   },
   {
     name: 'Analytics',
