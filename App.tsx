@@ -36,7 +36,10 @@ import {
   AdminProducts,
   AdminCategories,
   AdminUsers,
-  AdminOrders
+  AdminOrders,
+  AdminSettings,
+  AdminContacts,
+  AdminShipping
 } from './pages/admin';
 import { ProductForm as AdminProductForm } from './pages/admin/ProductForm';
 import { CategoryForm as AdminCategoryForm } from './pages/admin/CategoryForm';
