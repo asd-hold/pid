@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '../../shared/ui/Button';
 import { SettingsAPI, ContactSettings, AdminSettings } from '../../shared/api';
-import { Save, Phone, Mail, MapPin } from 'lucide-react';
+import { Save, Mail, MapPin } from 'lucide-react';
 
 export function AdminContacts() {
   const [saving, setSaving] = useState(false);
