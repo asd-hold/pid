@@ -20,7 +20,6 @@ import {
   Search,
   Home,
   ChevronDown,
-  Activity,
   Mail,
   Truck
 } from 'lucide-react';
