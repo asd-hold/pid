@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Settings as SettingsIcon, Plus, Save, Trash2, Image as ImageIcon, Paintbrush, Link as LinkIcon, ToggleLeft } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Plus, Save, Trash2, Image as ImageIcon } from 'lucide-react';
 import { Button } from '../../shared/ui/Button';
 import { ImageUploader, ImageItem } from '../../components/ui/ImageUploader';
 import { SettingsAPI, BannerSettings, AdminSettings } from '../../shared/api';
