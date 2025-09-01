@@ -174,7 +174,13 @@ export function AdminSettings() {
                   <h4 className="font-medium mb-2">Desktop Image</h4>
                   <ImageUploader
                     images={b.desktopImages}
-                    onChange={(imgs) => updateBanner(b.id, { desktopImages: typeof imgs === 'function' ? imgs(b.desktopImages) : imgs }) as any}
+                    onChange={(imgs: any) => {
+                      if (typeof imgs === 'function') {
+                        updateBanner(b.id, { desktopImages: imgs(b.desktopImages) });
+                      } else {
+                        updateBanner(b.id, { desktopImages: imgs });
+                      }
+                    }}
                     onUpload={SettingsAPI.uploadImage}
                     maxImages={1}
                   />
@@ -183,7 +189,13 @@ export function AdminSettings() {
                   <h4 className="font-medium mb-2">Mobile Image</h4>
                   <ImageUploader
                     images={b.mobileImages}
-                    onChange={(imgs) => updateBanner(b.id, { mobileImages: typeof imgs === 'function' ? imgs(b.mobileImages) : imgs }) as any}
+                    onChange={(imgs: any) => {
+                      if (typeof imgs === 'function') {
+                        updateBanner(b.id, { mobileImages: imgs(b.mobileImages) });
+                      } else {
+                        updateBanner(b.id, { mobileImages: imgs });
+                      }
+                    }}
                     onUpload={SettingsAPI.uploadImage}
                     maxImages={1}
                   />
