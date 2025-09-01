@@ -82,7 +82,9 @@ function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="analytics" element={<PlaceholderPage title="Analytics" />} />
-          <Route path="settings" element={<PlaceholderPage title="Settings" />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="contacts" element={<AdminContacts />} />
+          <Route path="shipping" element={<AdminShipping />} />
         </Route>
 
         {/* Shop Routes - Main Layout */}

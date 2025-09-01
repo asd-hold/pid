@@ -55,6 +55,16 @@ const adminNavigation = [
     badge: '342'
   },
   {
+    name: 'Contacts',
+    href: '/admin/contacts',
+    icon: Users
+  },
+  {
+    name: 'Shipping',
+    href: '/admin/shipping',
+    icon: Activity
+  },
+  {
     name: 'Analytics',
     href: '/admin/analytics',
     icon: BarChart3

@@ -5,3 +5,6 @@ export { AdminProducts } from './Products';
 export { AdminCategories } from './Categories';
 export { AdminUsers } from './Users';
 export { AdminOrders } from './Orders';
+export { AdminSettings } from './Settings';
+export { AdminContacts } from './Contacts';
+export { AdminShipping } from './Shipping';
