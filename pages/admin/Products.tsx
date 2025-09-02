@@ -166,7 +166,7 @@ export function AdminProducts() {
           </p>
         </div>
         <Link to="/admin/products/new">
-          <Button>
+          <Button disabled={!has('products.create')} onClick={(e) => { if (!has('products.create')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
             <Plus className="h-4 w-4 mr-2" />
             {t('admin.products.addProduct', 'Add Product')}
           </Button>
@@ -431,11 +431,11 @@ export function AdminProducts() {
               }
             </p>
             <Link to="/admin/products/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('admin.products.addProduct', 'Add Product')}
-              </Button>
-            </Link>
+          <Button disabled={!has('products.create')} onClick={(e) => { if (!has('products.create')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t('admin.products.addProduct', 'Add Product')}
+          </Button>
+        </Link>
           </div>
         )}
       </div>
