@@ -169,7 +169,7 @@ export function AdminBulkUpdate() {
         </div>
 
         <div className="pt-4 flex gap-2">
-          <Button onClick={apply}><Save className="h-4 w-4 mr-2"/>Apply Changes</Button>
+          <Button onClick={apply} disabled={!has('products.bulkUpdate')}><Save className="h-4 w-4 mr-2"/>Apply Changes</Button>
           {result !== null && <div className="text-sm text-muted-foreground self-center">Updated {result} products.</div>}
         </div>
       </div>
