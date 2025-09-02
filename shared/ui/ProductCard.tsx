@@ -215,15 +215,36 @@ export function ProductCard({
             )}
           </div>
 
-          {/* Always-visible Add to Cart */}
-          <div className="flex">
+          {/* Actions: Add to Cart + Favourite */}
+          <div className="flex items-center gap-2">
             <Button
               size="sm"
               onClick={handleAddToCart}
               disabled={product.stock === 0}
-              className="w-full"
+              className="flex-1"
             >
               {product.stock === 0 ? t('product.outOfStock') : t('product.addToCart')}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFavouriteClick}
+              aria-label={isFavourite ? t('product.removeFromFavourites') : t('product.addToFavourites')}
+              className={isFavourite ? 'text-red-500 border-red-500' : ''}
+            >
+              <svg
+                className={`w-4 h-4 ${isFavourite ? 'fill-current' : ''}`}
+                fill={isFavourite ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
             </Button>
           </div>
         </div>
