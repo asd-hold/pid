@@ -44,6 +44,7 @@ export function ProductDetail() {
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [hoverPreviewIndex, setHoverPreviewIndex] = useState<number | null>(null);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   const isFavourite = useAppSelector(selectIsFavourite(product?.id || ''));
@@ -204,7 +205,7 @@ export function ProductDetail() {
             {/* Main Image */}
             <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
               <img
-                src={product.images[activeImageIndex] || '/placeholder.svg'}
+                src={(product.images[hoverPreviewIndex ?? activeImageIndex]) || '/placeholder.svg'}
                 alt={product.title}
                 className={`w-full h-full object-cover transition-transform duration-300 ${
                   isImageZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
@@ -257,6 +258,8 @@ export function ProductDetail() {
                   <button
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
+                    onMouseEnter={() => setHoverPreviewIndex(index)}
+                    onMouseLeave={() => setHoverPreviewIndex(null)}
                     className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
                       index === activeImageIndex ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
                     }`}
