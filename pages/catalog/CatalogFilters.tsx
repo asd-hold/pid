@@ -54,10 +54,21 @@ export function CatalogFilters({
     if (filters.isOnSale) count++;
     if (filters.isNew) count++;
     if (filters.inStock) count++;
+    if (filters.colorFamily) count++;
+    if (filters.finish) count++;
+    if (filters.sheen) count++;
+    if (filters.base) count++;
+    if (filters.application) count++;
+    if (filters.volume) count++;
+    if (filters.lowVOC) count++;
     return count;
   };
 
-  const brands = ['Apple', 'Samsung', 'Nike', 'Adidas', 'Sony', 'Dell', 'HP', 'Canon'];
+  const brands = ['ColorCrafters', 'ProFinish', 'WeatherGuard', 'SealPro', 'WoodGuard', 'ArtisanCoat', 'ProTools'];
+  const colorFamilies = ['White', 'Gray', 'Blue', 'Green', 'Red', 'Yellow', 'Brown', 'Black', 'Beige'];
+  const finishes = ['Flat', 'Matte', 'Eggshell', 'Satin', 'Semi-Gloss', 'Gloss'];
+  const volumes = ['1 qt', '1 gal', '5 gal'];
+  const applications = ['Interior', 'Exterior', 'Interior/Exterior'];
 
   return (
     <div className="space-y-6">
