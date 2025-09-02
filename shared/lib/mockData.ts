@@ -635,15 +635,17 @@ export function initializeMockData(): void {
   const existingProducts = Storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, null);
   const existingCategories = Storage.get<Category[]>(STORAGE_KEYS.CATEGORIES, null);
 
-  // Only initialize if data doesn't exist
-  if (!existingProducts || existingProducts.length === 0) {
+  // Detect non-paint data and migrate
+  const hasPaintRoots = (existingCategories || []).some(c => ['interior-paint','exterior-paint','primers','stains-varnishes','specialty-coatings','tools-supplies'].includes(c.slug));
+  if (!existingCategories || existingCategories.length === 0 || !hasPaintRoots) {
+    Storage.set(STORAGE_KEYS.CATEGORIES, mockCategories);
+    console.log('✅ Categories set to paint store');
+    // If categories switched to paint, also seed paint products
+    Storage.set(STORAGE_KEYS.PRODUCTS, mockProducts);
+    console.log('✅ Products set to paint store');
+  } else if (!existingProducts || existingProducts.length === 0) {
     Storage.set(STORAGE_KEYS.PRODUCTS, mockProducts);
     console.log('✅ Mock products initialized (paint store)');
-  }
-
-  if (!existingCategories || existingCategories.length === 0) {
-    Storage.set(STORAGE_KEYS.CATEGORIES, mockCategories);
-    console.log('✅ Mock categories initialized (paint store)');
   }
 
   // Initialize empty arrays for user-specific data if they don't exist
