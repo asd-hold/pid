@@ -39,7 +39,9 @@ import {
   AdminOrders,
   AdminSettings,
   AdminContacts,
-  AdminShipping
+  AdminShipping,
+  AdminCoupons,
+  AdminBulkUpdate
 } from './pages/admin';
 import { ProductForm as AdminProductForm } from './pages/admin/ProductForm';
 import { CategoryForm as AdminCategoryForm } from './pages/admin/CategoryForm';
@@ -88,6 +90,8 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
           <Route path="contacts" element={<AdminContacts />} />
           <Route path="shipping" element={<AdminShipping />} />
+          <Route path="coupons" element={<AdminCoupons />} />
+          <Route path="bulk-update" element={<AdminBulkUpdate />} />
         </Route>
 
         {/* Shop Routes - Main Layout */}

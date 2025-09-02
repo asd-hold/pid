@@ -1,5 +1,6 @@
 import { Product, ProductSearchParams, ProductsResponse, ProductFilter } from '../../entities';
 import { Storage, STORAGE_KEYS } from '../lib/storage';
+import type { Product, ProductFilter, ProductSearchParams, ProductsResponse } from '../../entities';
 
 // Mock delay to simulate API calls
 const delay = (ms: number = 500) => new Promise(resolve => setTimeout(resolve, ms));
@@ -141,7 +142,7 @@ export class ProductsAPI {
 
   static async deleteProduct(id: string): Promise<boolean> {
     await delay();
-    
+
     const products = Storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, []);
     const filteredProducts = products.filter(product => product.id !== id);
 
@@ -151,6 +152,92 @@ export class ProductsAPI {
 
     Storage.set(STORAGE_KEYS.PRODUCTS, filteredProducts);
     return true;
+  }
+
+  static async bulkUpdate(options: {
+    filters?: ProductFilter;
+    ids?: string[];
+    price?: { mode: 'set' | 'increase_percent' | 'decrease_percent' | 'increase_amount' | 'decrease_amount'; value: number };
+    stock?: { mode: 'set' | 'increase' | 'decrease'; value: number };
+    flags?: { isOnSale?: boolean; isFeatured?: boolean; isNew?: boolean };
+    setOriginalPriceFromPrice?: boolean;
+  }): Promise<number> {
+    await delay();
+    const products = Storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, []);
+
+    let targets = products;
+    if (options.filters) targets = this.applyFilters(targets, options.filters);
+    if (options.ids && options.ids.length > 0) targets = targets.filter(p => options.ids!.includes(p.id));
+
+    const updatedIds = new Set<string>();
+
+    const applyPrice = (p: Product): Product => {
+      if (!options.price) return p;
+      let price = p.price;
+      if (options.setOriginalPriceFromPrice) {
+        p.originalPrice = p.price;
+      }
+      const { mode, value } = options.price;
+      switch (mode) {
+        case 'set':
+          price = Math.max(0, value);
+          break;
+        case 'increase_percent':
+          price = Math.max(0, price * (1 + value / 100));
+          break;
+        case 'decrease_percent':
+          price = Math.max(0, price * (1 - value / 100));
+          break;
+        case 'increase_amount':
+          price = Math.max(0, price + value);
+          break;
+        case 'decrease_amount':
+          price = Math.max(0, price - value);
+          break;
+      }
+      p.price = parseFloat(price.toFixed(2));
+      return p;
+    };
+
+    const applyStock = (p: Product): Product => {
+      if (!options.stock) return p;
+      const { mode, value } = options.stock;
+      let stock = p.stock || 0;
+      switch (mode) {
+        case 'set': stock = Math.max(0, Math.floor(value)); break;
+        case 'increase': stock = Math.max(0, Math.floor(stock + value)); break;
+        case 'decrease': stock = Math.max(0, Math.floor(stock - value)); break;
+      }
+      p.stock = stock;
+      return p;
+    };
+
+    const applyFlags = (p: Product): Product => {
+      if (!options.flags) return p;
+      const { isOnSale, isFeatured, isNew } = options.flags;
+      if (typeof isOnSale === 'boolean') p.isOnSale = isOnSale;
+      if (typeof isFeatured === 'boolean') p.isFeatured = isFeatured;
+      if (typeof isNew === 'boolean') p.isNew = isNew;
+      return p;
+    };
+
+    const next = products.map(p => {
+      const target = targets.find(t => t.id === p.id);
+      if (!target) return p;
+      const before = { ...p };
+      let result = { ...p } as Product;
+      result = applyPrice(result);
+      result = applyStock(result);
+      result = applyFlags(result);
+      if (JSON.stringify(before) !== JSON.stringify(result)) {
+        result.dateModified = new Date().toISOString();
+        updatedIds.add(result.id);
+      }
+      return result;
+    });
+
+    Storage.set(STORAGE_KEYS.PRODUCTS, next);
+    return updatedIds.size;
   }
 
   private static applyFilters(products: Product[], filters: ProductFilter): Product[] {

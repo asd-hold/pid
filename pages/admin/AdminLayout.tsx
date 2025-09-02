@@ -66,6 +66,16 @@ const adminNavigation = [
     icon: Truck
   },
   {
+    name: 'Coupons',
+    href: '/admin/coupons',
+    icon: Mail
+  },
+  {
+    name: 'Bulk Update',
+    href: '/admin/bulk-update',
+    icon: Layers
+  },
+  {
     name: 'Analytics',
     href: '/admin/analytics',
     icon: BarChart3

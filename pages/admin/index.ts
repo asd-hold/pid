@@ -8,3 +8,5 @@ export { AdminOrders } from './Orders';
 export { AdminSettings } from './Settings';
 export { AdminContacts } from './Contacts';
 export { AdminShipping } from './Shipping';
+export { AdminCoupons } from './Coupons';
+export { AdminBulkUpdate } from './BulkUpdate';

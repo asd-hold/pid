@@ -71,6 +71,7 @@ export const STORAGE_KEYS = {
   FILTERS: 'ecommerce_filters',
   ADDRESSES: 'ecommerce_addresses',
   SETTINGS: 'ecommerce_admin_settings',
+  COUPONS: 'ecommerce_coupons',
 } as const;
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];
