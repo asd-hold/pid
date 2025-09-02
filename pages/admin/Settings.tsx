@@ -4,6 +4,8 @@ import { Button } from '../../shared/ui/Button';
 import { ImageUploader, ImageItem } from '../../components/ui/ImageUploader';
 import { SettingsAPI } from '../../shared/api';
 import type { BannerSettings, AdminSettings as AdminSettingsModel } from '../../shared/api';
+import { usePermissions } from '../../shared/lib/permissions';
+import { NotificationService } from '../../shared/lib/notifications';
 
 interface BannerForm extends BannerSettings {
   desktopImages: ImageItem[];
@@ -20,6 +22,7 @@ function firstUrl(items: ImageItem[]): string | undefined {
 
 export function AdminSettings() {
   const [saving, setSaving] = useState(false);
+  const { has } = usePermissions();
   const [settings, setSettings] = useState<AdminSettingsModel | null>(null);
   const [banners, setBanners] = useState<BannerForm[]>([]);
 
@@ -36,6 +39,7 @@ export function AdminSettings() {
   }, []);
 
   const addBanner = () => {
+    if (!has('settings.update')) { NotificationService.permissionDenied(); return; }
     const nowId = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
     setBanners(prev => [
       ...prev,
@@ -57,14 +61,17 @@ export function AdminSettings() {
   };
 
   const removeBanner = (id: string) => {
+    if (!has('settings.update')) { NotificationService.permissionDenied(); return; }
     setBanners(prev => prev.filter(b => b.id !== id));
   };
 
   const updateBanner = (id: string, patch: Partial<BannerForm>) => {
+    if (!has('settings.update')) { NotificationService.permissionDenied(); return; }
     setBanners(prev => prev.map(b => (b.id === id ? { ...b, ...patch } : b)));
   };
 
   const handleSave = async () => {
+    if (!has('settings.update')) { NotificationService.permissionDenied(); return; }
     if (!settings) return;
     setSaving(true);
     try {
@@ -105,14 +112,14 @@ export function AdminSettings() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => { const s = SettingsAPI.getSettings(); setSettings(s); setBanners(s.banners.map(b => ({...b, desktopImages: toImageItems(b.imageDesktop), mobileImages: toImageItems(b.imageMobile)}))); }}>Reset</Button>
-          <Button onClick={handleSave} disabled={saving}>{saving ? 'Saving...' : (<><Save className="h-4 w-4 mr-2" />Save</>)}</Button>
+          <Button onClick={handleSave} disabled={saving || !has('settings.update')}>{saving ? 'Saving...' : (<><Save className="h-4 w-4 mr-2" />Save</>)}</Button>
         </div>
       </div>
 
       <div className="bg-card border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold flex items-center"><ImageIcon className="h-5 w-5 mr-2"/>Banner Settings</h2>
-          <Button size="sm" onClick={addBanner}><Plus className="h-4 w-4 mr-2"/>Add Banner</Button>
+          <Button size="sm" onClick={addBanner} disabled={!has('settings.update')}><Plus className="h-4 w-4 mr-2"/>Add Banner</Button>
         </div>
 
         <div className="space-y-6">
