@@ -316,16 +316,30 @@ export function Cart() {
                   <span className="text-foreground-muted">{t('cart.tax')}</span>
                   <span className="text-foreground">{tax.formatted}</span>
                 </div>
-                
-                {discount > 0 && (
+
+                {couponApplied?.discount ? (
                   <div className="flex justify-between text-success">
-                    <span>{t('cart.discount')}</span>
-                    <span>-${discount.toFixed(2)}</span>
+                    <span>Discount{couponApplied.code ? ` (${couponApplied.code})` : ''}</span>
+                    <span>- ${couponApplied.discount.toFixed(2)}</span>
                   </div>
-                )}
-                
-                <hr className="border-border" />
-                
+                ) : null}
+
+                <div className="mt-4">
+                  <div className="flex gap-2">
+                    <input
+                      className="flex-1 px-3 py-2 border rounded-md"
+                      placeholder="Coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                    />
+                    <Button variant="outline" onClick={couponApplied ? removeCoupon : applyCoupon}>
+                      {couponApplied ? 'Remove' : 'Apply'}
+                    </Button>
+                  </div>
+                </div>
+
+                <hr className="border-border mt-4" />
+
                 <div className="flex justify-between text-lg font-semibold">
                   <span className="text-foreground">{t('cart.total')}</span>
                   <span className="text-foreground">{total.formatted}</span>
