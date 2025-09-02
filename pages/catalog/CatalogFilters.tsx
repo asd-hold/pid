@@ -126,8 +126,8 @@ export function CatalogFilters({
               {filters.category && (
                 <Badge variant="secondary" className="text-xs">
                   {filters.category}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => handleFilterChange('category', undefined)}
                   />
                 </Badge>
@@ -135,23 +135,53 @@ export function CatalogFilters({
               {filters.brand && (
                 <Badge variant="secondary" className="text-xs">
                   {filters.brand}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => handleFilterChange('brand', undefined)}
                   />
+                </Badge>
+              )}
+              {filters.colorFamily && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.colorFamily}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('colorFamily', undefined)} />
+                </Badge>
+              )}
+              {filters.finish && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.finish}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('finish', undefined)} />
+                </Badge>
+              )}
+              {filters.application && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.application}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('application', undefined)} />
+                </Badge>
+              )}
+              {filters.volume && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.volume}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('volume', undefined)} />
                 </Badge>
               )}
               {(filters.priceMin !== undefined || filters.priceMax !== undefined) && (
                 <Badge variant="secondary" className="text-xs">
                   ${filters.priceMin || 0} - ${filters.priceMax || 1000}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => {
                       handleFilterChange('priceMin', undefined);
                       handleFilterChange('priceMax', undefined);
                       setPriceRange([0, 1000]);
                     }}
                   />
+                </Badge>
+              )}
+              {filters.lowVOC && (
+                <Badge variant="secondary" className="text-xs">
+                  Low VOC
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('lowVOC', undefined)} />
                 </Badge>
               )}
             </div>
