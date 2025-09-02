@@ -349,6 +349,46 @@ export function ProductDetail() {
               <p className="text-muted-foreground leading-relaxed">{product.description}</p>
             </div>
 
+            {/* Paint Details */}
+            <div className="border rounded-md p-4 bg-card/50">
+              <h3 className="font-semibold text-foreground mb-3">Paint Details</h3>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                {product.specifications['Color Hex'] && (
+                  <span
+                    className="inline-flex items-center gap-2 px-2 py-1 rounded border bg-background"
+                    title={product.specifications['Color'] || 'Color'}
+                  >
+                    <span
+                      className="inline-block w-4 h-4 rounded-full border"
+                      style={{ backgroundColor: product.specifications['Color Hex'] }}
+                    />
+                    {product.specifications['Color'] || 'Color'}
+                  </span>
+                )}
+                {product.specifications['Finish'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Finish']}</span>
+                )}
+                {product.specifications['Sheen'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Sheen']}</span>
+                )}
+                {product.specifications['Base'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Base']}</span>
+                )}
+                {product.specifications['Volume'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Volume']}</span>
+                )}
+                {product.specifications['Coverage'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Coverage']}</span>
+                )}
+                {product.specifications['Application'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Application']}</span>
+                )}
+                {product.specifications['VOC g/L'] && (
+                  <span className="px-2 py-1 rounded border bg-background">VOC: {product.specifications['VOC g/L']}</span>
+                )}
+              </div>
+            </div>
+
             {/* Features */}
             {product.features.length > 0 && (
               <div>
