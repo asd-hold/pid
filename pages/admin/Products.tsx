@@ -375,7 +375,7 @@ export function AdminProducts() {
                     <td className="px-6 py-4">
                       <select
                         value={product.status || 'published'}
-                        onChange={(e) => handleStatusChange(product.id, e.target.value as any)}
+                        onChange={(e) => { if (!has('products.update')) { e.preventDefault(); NotificationService.permissionDenied(); return; } handleStatusChange(product.id, e.target.value as any); }}
                         className={`px-2 py-1 rounded-md text-xs font-medium border-0 cursor-pointer ${
                           getStatusBadge(product.status || 'published').color === 'default' ? 'bg-primary text-primary-foreground' :
                           getStatusBadge(product.status || 'published').color === 'secondary' ? 'bg-secondary text-secondary-foreground' :
