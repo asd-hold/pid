@@ -409,6 +409,16 @@ export function CatalogFilters({
                 {t('catalog.inStock', 'In Stock Only')}
               </Label>
             </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="low-voc"
+                checked={filters.lowVOC || false}
+                onCheckedChange={(checked) => handleFilterChange('lowVOC', checked || undefined)}
+              />
+              <Label htmlFor="low-voc" className="text-sm font-normal">
+                Low VOC (≤ 50 g/L)
+              </Label>
+            </div>
           </div>
         </div>
       </div>
