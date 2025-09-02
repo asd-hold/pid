@@ -30,6 +30,7 @@ export function AdminProducts() {
   const categories = useAppSelector(selectCategories);
   
   const [products, setProducts] = useState<Product[]>([]);
+  const { has } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
