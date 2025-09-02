@@ -4,11 +4,14 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectCategories, fetchCategories } from '../../features/catalog/catalogSlice';
 import { ProductsAPI } from '../../shared/api';
 import { Save, SlidersHorizontal } from 'lucide-react';
+import { usePermissions } from '../../shared/lib/permissions';
+import { NotificationService } from '../../shared/lib/notifications';
 
 export function AdminBulkUpdate() {
   const dispatch = useAppDispatch();
   const categories = useAppSelector(selectCategories);
   const [filters, setFilters] = useState<{ category?: string; subcategory?: string; status?: string; isOnSale?: boolean; inStock?: boolean }>({});
+  const { has } = usePermissions();
   const [price, setPrice] = useState<{ mode: 'none' | 'set' | 'increase_percent' | 'decrease_percent' | 'increase_amount' | 'decrease_amount'; value: number }>({ mode: 'none', value: 0 });
   const [stock, setStock] = useState<{ mode: 'none' | 'set' | 'increase' | 'decrease'; value: number }>({ mode: 'none', value: 0 });
   const [flags, setFlags] = useState<{ isOnSale?: '' | 'true' | 'false'; isFeatured?: '' | 'true' | 'false'; isNew?: '' | 'true' | 'false' }>({});
@@ -33,6 +36,7 @@ export function AdminBulkUpdate() {
     const pricePayload = price.mode === 'none' ? undefined : { mode: price.mode as any, value: price.value };
     const stockPayload = stock.mode === 'none' ? undefined : { mode: stock.mode as any, value: stock.value };
 
+    if (!has('products.bulkUpdate')) { NotificationService.permissionDenied(); return; }
     const updated = await ProductsAPI.bulkUpdate({ filters: f, price: pricePayload as any, stock: stockPayload as any, flags: Object.keys(flagPayload).length ? flagPayload : undefined, setOriginalPriceFromPrice: setOriginal });
     setResult(updated);
   };
@@ -42,6 +46,9 @@ export function AdminBulkUpdate() {
 
   return (
     <div className="space-y-6">
+      {!has('products.bulkUpdate') && (
+        <div className="bg-destructive/10 border border-destructive text-destructive p-4 rounded-md">You do not have permission to use Bulk Update.</div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Bulk Update</h1>
