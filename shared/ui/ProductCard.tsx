@@ -67,11 +67,11 @@ export function ProductCard({
 
   return (
     <div
-      className={`group relative bg-card border border-border rounded-lg overflow-hidden transition-theme hover:shadow-theme-md ${className}`}
+      className={`group relative bg-card border border-border rounded-lg overflow-hidden transition-theme hover:shadow-theme-md h-full flex flex-col ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setCurrentImageIndex(0); }}
     >
-      <Link to={`/product/${product.slug}`} className="block">
+      <Link to={`/product/${product.slug}`} className="block h-full">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-muted" onMouseMove={handleImageMove}>
           <img
