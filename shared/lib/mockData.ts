@@ -1,11 +1,26 @@
 import { Product, Category } from '../../entities';
 import { Storage, STORAGE_KEYS } from './storage';
 
-// Helper to build placeholder images
+// Fixed paint-related image pool (royalty-free)
+const PAINT_IMAGES = [
+  'https://images.pexels.com/photos/7217966/pexels-photo-7217966.jpeg', // interior prep
+  'https://images.pexels.com/photos/2293822/pexels-photo-2293822.jpeg', // tray and roller
+  'https://images.pexels.com/photos/221027/pexels-photo-221027.jpeg',   // exterior painting wood
+  'https://images.pexels.com/photos/5642113/pexels-photo-5642113.jpeg', // brushes and cans
+  'https://images.pexels.com/photos/5583096/pexels-photo-5583096.jpeg', // rollers and ladder
+  'https://images.pexels.com/photos/7493875/pexels-photo-7493875.jpeg', // paint sprayer
+  'https://images.pexels.com/photos/2768398/pexels-photo-2768398.jpeg', // masonry wall texture
+  'https://images.pexels.com/photos/7217957/pexels-photo-7217957.jpeg', // chalk paint furniture scene
+];
+
+// Helper to build fixed paint-related images deterministically from seed
 const getProductImages = (seed: string, count: number = 3): string[] => {
+  const list = PAINT_IMAGES;
+  const hash = Array.from(seed).reduce((h, ch) => ((h * 31 + ch.charCodeAt(0)) >>> 0), 0);
+  const start = list.length > 0 ? hash % list.length : 0;
   const images: string[] = [];
   for (let i = 0; i < count; i++) {
-    images.push(`https://picsum.photos/seed/${encodeURIComponent(seed + '-' + i)}/600/600`);
+    images.push(list[(start + i) % list.length]);
   }
   return images;
 };
