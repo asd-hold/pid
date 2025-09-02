@@ -71,7 +71,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setCurrentImageIndex(0); }}
     >
-      <Link to={`/product/${product.slug}`} className="block h-full">
+      <Link to={`/product/${product.slug}`} className="block">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-muted" onMouseMove={handleImageMove}>
           <img
@@ -148,8 +148,9 @@ export function ProductCard({
             </div>
           )}
         </div>
+      </Link>
 
-        {/* Content */}
+      {/* Content */}
         <div className="p-4 h-full flex flex-col">
           <div className="flex-1">
             {/* Brand */}
@@ -158,9 +159,11 @@ export function ProductCard({
             )}
 
             {/* Title */}
-            <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-              {product.title}
-            </h3>
+            <Link to={`/product/${product.slug}`} className="block">
+              <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                {product.title}
+              </h3>
+            </Link>
 
             {/* Paint quick specs */}
             {product.specifications && (
@@ -229,7 +232,6 @@ export function ProductCard({
             </Button>
           </div>
         </div>
-      </Link>
     </div>
   );
 }
