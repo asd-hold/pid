@@ -250,7 +250,13 @@ export class ProductsAPI {
   }
 
   private static applyFilters(products: Product[], filters: ProductFilter): Product[] {
+    const strEq = (a?: string, b?: string) => (a || '').toLowerCase() === (b || '').toLowerCase();
+    const strIncl = (a?: string, b?: string) => (a || '').toLowerCase().includes((b || '').toLowerCase());
+
     return products.filter(product => {
+      const spec = product.specifications || {} as Record<string, string>;
+      const specVal = (key: string) => spec[key] || '';
+
       // Category filtering
       if (filters.category && product.category !== filters.category) return false;
 
@@ -283,10 +289,30 @@ export class ProductsAPI {
 
       // Tags filtering
       if (filters.tags && filters.tags.length > 0) {
-        const hasMatchingTag = filters.tags.some(tag =>
-          product.tags.includes(tag)
-        );
+        const hasMatchingTag = filters.tags.some(tag => product.tags.includes(tag));
         if (!hasMatchingTag) return false;
+      }
+
+      // Paint-specific filtering
+      if (filters.colorFamily && !strEq(specVal('Color Family'), filters.colorFamily)) return false;
+      if (filters.colorHex) {
+        const hex = specVal('Color Hex');
+        if (!hex || hex.toLowerCase() !== filters.colorHex.toLowerCase()) return false;
+      }
+      if (filters.finish && !(strEq(specVal('Finish'), filters.finish) || strEq(specVal('Sheen'), filters.finish))) return false;
+      if (filters.sheen && !(strEq(specVal('Sheen'), filters.sheen) || strEq(specVal('Finish'), filters.sheen))) return false;
+      if (filters.base && !strIncl(specVal('Base'), filters.base)) return false;
+      if (filters.application && !strIncl(specVal('Application'), filters.application)) return false;
+      if (filters.volume && !strEq(specVal('Volume'), filters.volume)) return false;
+      if (filters.lowVOC === true) {
+        const vocStr = specVal('VOC g/L');
+        const tagLow = product.tags.some(t => t.toLowerCase() === 'low-voc');
+        let vocOk = false;
+        if (vocStr) {
+          const num = parseFloat(vocStr.replace(/[^0-9.]/g, ''));
+          if (!isNaN(num)) vocOk = num <= 50;
+        }
+        if (!vocOk && !tagLow) return false;
       }
 
       return true;
