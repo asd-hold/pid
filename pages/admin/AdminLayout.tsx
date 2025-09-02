@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectUser, logout } from '../../features/auth/authSlice';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
+import { usePermissions } from '../../shared/lib/permissions';
 import {
   LayoutDashboard,
   Package,
@@ -93,6 +94,7 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const { has } = usePermissions();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications] = useState([
     { id: 1, message: 'New order received', time: '2m ago', unread: true },
@@ -126,7 +128,20 @@ export function AdminLayout() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
-        {adminNavigation.map((item) => {
+        {adminNavigation
+          .filter((item) => {
+            switch (item.name) {
+              case 'Products': return has('products.read');
+              case 'Categories': return has('categories.read');
+              case 'Users': return has('users.read');
+              case 'Orders': return has('orders.read');
+              case 'Settings': return has('settings.update');
+              case 'Coupons': return has('coupons.read');
+              case 'Bulk Update': return has('products.bulkUpdate');
+              default: return true;
+            }
+          })
+          .map((item) => {
           const Icon = item.icon;
           const isActive = isActiveRoute(item.href, item.exact);
           
