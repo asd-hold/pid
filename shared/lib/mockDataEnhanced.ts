@@ -8,7 +8,7 @@ export const mockCategoriesWithSubcategories: Category[] = [
     slug: 'interior-paint',
     name: 'Interior Paint',
     description: 'Durable, washable finishes for interior walls and ceilings',
-    image: 'https://picsum.photos/300/200?random=paint-cat-interior',
+    image: 'https://images.pexels.com/photos/7217966/pexels-photo-7217966.jpeg',
     productCount: 60,
     isActive: true,
     sortOrder: 1,
