@@ -9,7 +9,8 @@ export interface User {
   avatar?: string;
   dateOfBirth?: string;
   gender?: 'male' | 'female' | 'other';
-  role?: 'admin' | 'user';
+  role?: 'owner' | 'admin' | 'manager' | 'editor' | 'viewer' | 'user';
+  permissions?: string[];
   preferences: UserPreferences;
   addresses: Address[];
   defaultShippingAddress?: string;

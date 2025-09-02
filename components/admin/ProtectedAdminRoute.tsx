@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { selectIsAuthenticated, selectUser } from '../../features/auth/authSlice';
+import { isAdminRole } from '../../shared/lib/permissions';
 
 interface ProtectedAdminRouteProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export function ProtectedAdminRoute({ children }: ProtectedAdminRouteProps) {
   }
 
   // Check if user has admin role
-  if (!user || user.role !== 'admin') {
+  if (!user || !isAdminRole(user.role)) {
     // Redirect to home page if not admin
     return <Navigate to="/" replace />;
   }

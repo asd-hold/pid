@@ -132,7 +132,7 @@ export function Header() {
                         >
                           {t('profile.orderHistory')}
                         </Link>
-                        {user?.role === 'admin' && (
+                        {(user && user.role && user.role !== 'user') && (
                           <Link
                             to="/admin"
                             className="block px-4 py-2 text-sm hover:bg-surface-alt transition-theme text-primary font-medium"
