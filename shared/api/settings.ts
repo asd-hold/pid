@@ -1,5 +1,7 @@
 import { Storage, STORAGE_KEYS } from '../lib/storage';
 import { ImageUploadAPI } from './images';
+import { Storage, STORAGE_KEYS } from '../lib/storage';
+import { AuditAPI } from './audit';
 
 export type BannerPlacement = 'home' | 'catalog' | 'all';
 
@@ -126,7 +128,9 @@ export class SettingsAPI {
   }
 
   static saveSettings(settings: AdminSettings): void {
+    const before = Storage.get<AdminSettings>(STORAGE_KEYS.SETTINGS, null);
     Storage.set<AdminSettings>(STORAGE_KEYS.SETTINGS, settings);
+    AuditAPI.record({ action: before ? 'update' : 'create', entity: 'settings', entityId: 'admin_settings', before, after: settings });
   }
 
   static addBanner(partial: Partial<BannerSettings>): BannerSettings {
