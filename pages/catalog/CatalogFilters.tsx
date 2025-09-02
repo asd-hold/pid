@@ -238,6 +238,81 @@ export function CatalogFilters({
           </div>
         </div>
 
+        {/* Color Family */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Color Family</Label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className={`px-2 py-1 rounded border text-xs ${!filters.colorFamily ? 'bg-muted' : ''}`}
+              onClick={() => handleFilterChange('colorFamily', undefined)}
+            >All</button>
+            {colorFamilies.map(color => (
+              <button
+                key={color}
+                className={`flex items-center gap-2 px-2 py-1 rounded border text-xs ${filters.colorFamily === color ? 'bg-primary text-primary-foreground' : ''}`}
+                onClick={() => handleFilterChange('colorFamily', color)}
+              >
+                <span
+                  className="inline-block w-4 h-4 rounded-full border"
+                  style={{ backgroundColor: color.toLowerCase() === 'white' ? '#fff' : color.toLowerCase() === 'black' ? '#000' : undefined }}
+                />
+                {color}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Finish */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Finish</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="finish-all" checked={!filters.finish} onCheckedChange={() => handleFilterChange('finish', undefined)} />
+              <Label htmlFor="finish-all" className="text-sm font-normal">All Finishes</Label>
+            </div>
+            {finishes.map(f => (
+              <div key={f} className="flex items-center space-x-2">
+                <Checkbox id={`finish-${f}`} checked={filters.finish === f} onCheckedChange={(checked) => handleFilterChange('finish', checked ? f : undefined)} />
+                <Label htmlFor={`finish-${f}`} className="text-sm font-normal">{f}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Application */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Application</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="app-all" checked={!filters.application} onCheckedChange={() => handleFilterChange('application', undefined)} />
+              <Label htmlFor="app-all" className="text-sm font-normal">All</Label>
+            </div>
+            {applications.map(a => (
+              <div key={a} className="flex items-center space-x-2">
+                <Checkbox id={`app-${a}`} checked={filters.application === a} onCheckedChange={(checked) => handleFilterChange('application', checked ? a : undefined)} />
+                <Label htmlFor={`app-${a}`} className="text-sm font-normal">{a}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Volume */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Volume</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="vol-all" checked={!filters.volume} onCheckedChange={() => handleFilterChange('volume', undefined)} />
+              <Label htmlFor="vol-all" className="text-sm font-normal">All Sizes</Label>
+            </div>
+            {volumes.map(v => (
+              <div key={v} className="flex items-center space-x-2">
+                <Checkbox id={`vol-${v}`} checked={filters.volume === v} onCheckedChange={(checked) => handleFilterChange('volume', checked ? v : undefined)} />
+                <Label htmlFor={`vol-${v}`} className="text-sm font-normal">{v}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Brand */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">{t('catalog.brand', 'Brand')}</Label>
@@ -257,7 +332,7 @@ export function CatalogFilters({
                 <Checkbox
                   id={`brand-${brand}`}
                   checked={filters.brand === brand}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     handleFilterChange('brand', checked ? brand : undefined)
                   }
                 />
