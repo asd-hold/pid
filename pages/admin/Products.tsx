@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectProducts, selectCategories, fetchCategories } from '../../features/catalog/catalogSlice';
 import { ProductsAPI } from '../../shared/api';
+import { usePermissions } from '../../shared/lib/permissions';
+import { NotificationService } from '../../shared/lib/notifications';
 import { Product } from '../../entities';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Button } from '../../shared/ui/Button';
