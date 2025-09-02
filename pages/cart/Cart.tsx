@@ -150,7 +150,36 @@ export function Cart() {
 
   // Use currency-formatted totals from the hook
   const { subtotal, shipping, tax, total } = orderTotal;
-  const discount = 0; // You can implement discount logic here if needed
+  const [couponCode, setCouponCode] = React.useState('');
+  const [couponApplied, setCouponApplied] = React.useState<{ code?: string; discount?: number } | null>(null);
+
+  const applyCoupon = async () => {
+    const { CartAPI } = await import('../../shared/api/cart');
+    const { CouponsAPI } = await import('../../shared/api/coupons');
+    const currentCart = await CartAPI.getCart();
+    const validation = CouponsAPI.validate(couponCode.trim(), currentCart.items, currentCart.subtotal);
+    if (!validation.valid) {
+      alert(validation.reason || 'Invalid coupon');
+      return;
+    }
+    // apply discount and optional free shipping
+    currentCart.discount = validation.discount || 0;
+    if (validation.freeShipping) currentCart.shipping = 0;
+    currentCart.total = Math.max(0, currentCart.subtotal + currentCart.tax + currentCart.shipping - currentCart.discount);
+    (await import('../../shared/lib/storage')).Storage.set((await import('../../shared/lib/storage')).STORAGE_KEYS.CART, currentCart);
+    setCouponApplied({ code: couponCode.trim(), discount: currentCart.discount });
+    dispatch(fetchCart());
+  };
+
+  const removeCoupon = async () => {
+    const { CartAPI } = await import('../../shared/api/cart');
+    const cart = await CartAPI.getCart();
+    cart.discount = 0;
+    (await import('../../shared/lib/storage')).Storage.set((await import('../../shared/lib/storage')).STORAGE_KEYS.CART, cart);
+    setCouponApplied(null);
+    setCouponCode('');
+    dispatch(fetchCart());
+  };
 
   return (
     <div className="min-h-screen bg-background py-12">
