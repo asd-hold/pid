@@ -1,5 +1,6 @@
 import { Product, ProductSearchParams, ProductsResponse, ProductFilter } from '../../entities';
 import { Storage, STORAGE_KEYS } from '../lib/storage';
+import { AuditAPI } from './audit';
 import type { Product, ProductFilter, ProductSearchParams, ProductsResponse } from '../../entities';
 
 // Mock delay to simulate API calls
@@ -119,6 +120,7 @@ export class ProductsAPI {
     products.push(newProduct);
     Storage.set(STORAGE_KEYS.PRODUCTS, products);
 
+    AuditAPI.record({ action: 'create', entity: 'product', entityId: newProduct.id, after: newProduct });
     return newProduct;
   }
 
@@ -130,6 +132,7 @@ export class ProductsAPI {
 
     if (index === -1) return null;
 
+    const before = { ...products[index] };
     products[index] = {
       ...products[index],
       ...updates,
@@ -137,6 +140,7 @@ export class ProductsAPI {
     };
 
     Storage.set(STORAGE_KEYS.PRODUCTS, products);
+    AuditAPI.record({ action: 'update', entity: 'product', entityId: id, before, after: products[index] });
     return products[index];
   }
 
@@ -144,6 +148,7 @@ export class ProductsAPI {
     await delay();
 
     const products = Storage.get<Product[]>(STORAGE_KEYS.PRODUCTS, []);
+    const before = products.find(product => product.id === id) || null;
     const filteredProducts = products.filter(product => product.id !== id);
 
     if (filteredProducts.length === products.length) {
@@ -151,6 +156,7 @@ export class ProductsAPI {
     }
 
     Storage.set(STORAGE_KEYS.PRODUCTS, filteredProducts);
+    AuditAPI.record({ action: 'delete', entity: 'product', entityId: id, before });
     return true;
   }
 
@@ -221,6 +227,7 @@ export class ProductsAPI {
       return p;
     };
 
+    const changes: Array<{ before: Product; after: Product }> = [];
     const next = products.map(p => {
       const target = targets.find(t => t.id === p.id);
       if (!target) return p;
@@ -232,11 +239,13 @@ export class ProductsAPI {
       if (JSON.stringify(before) !== JSON.stringify(result)) {
         result.dateModified = new Date().toISOString();
         updatedIds.add(result.id);
+        changes.push({ before, after: result });
       }
       return result;
     });
 
     Storage.set(STORAGE_KEYS.PRODUCTS, next);
+    changes.forEach(c => AuditAPI.record({ action: 'update', entity: 'product', entityId: c.after.id, before: c.before, after: c.after, metadata: { bulk: true } }));
     return updatedIds.size;
   }
 
