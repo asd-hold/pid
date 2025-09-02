@@ -36,6 +36,15 @@ export function ProductCard({
     }
   };
 
+  const handleImageMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (product.images.length <= 1) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const ratio = Math.min(Math.max(x / rect.width, 0), 1);
+    const idx = Math.min(Math.max(Math.floor(ratio * product.images.length), 0), product.images.length - 1);
+    if (idx !== currentImageIndex) setCurrentImageIndex(idx);
+  };
+
   const handleFavouriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -60,11 +69,11 @@ export function ProductCard({
     <div
       className={`group relative bg-card border border-border rounded-lg overflow-hidden transition-theme hover:shadow-theme-md ${className}`}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => { setIsHovered(false); setCurrentImageIndex(0); }}
     >
       <Link to={`/product/${product.slug}`} className="block">
         {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden bg-muted">
+        <div className="relative aspect-square overflow-hidden bg-muted" onMouseMove={handleImageMove}>
           <img
             src={product.images[currentImageIndex] || '/placeholder.svg'}
             alt={product.title}
@@ -101,19 +110,6 @@ export function ProductCard({
             </div>
           )}
 
-          {/* Quick Actions */}
-          {showQuickActions && isHovered && product.stock > 0 && (
-            <div className="absolute inset-0 bg-black/20 flex items-center justify-center gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={handleAddToCart}
-                className="bg-background/90 backdrop-blur-sm"
-              >
-                {t('product.addToCart')}
-              </Button>
-            </div>
-          )}
 
           {/* Favourite Button */}
           {showQuickActions && (
@@ -186,7 +182,7 @@ export function ProductCard({
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-3">
             <span className="text-lg font-semibold text-foreground">
               {price.formatted}
             </span>
@@ -195,6 +191,18 @@ export function ProductCard({
                 {originalPrice.formatted}
               </span>
             )}
+          </div>
+
+          {/* Always-visible Add to Cart */}
+          <div className="flex">
+            <Button
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+              className="w-full"
+            >
+              {product.stock === 0 ? t('product.outOfStock') : t('product.addToCart')}
+            </Button>
           </div>
         </div>
       </Link>
