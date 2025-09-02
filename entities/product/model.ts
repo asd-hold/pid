@@ -42,7 +42,17 @@ export interface ProductFilter {
   status?: 'draft' | 'published' | 'archived' | 'discontinued';
   isOnSale?: boolean;
   isNew?: boolean;
+  isFeatured?: boolean;
   inStock?: boolean;
+  // Paint-specific filters (values are matched against specifications/tags)
+  colorFamily?: string;      // e.g., White, Gray, Blue
+  colorHex?: string;         // e.g., #FFFFFF
+  finish?: string;           // e.g., Matte, Eggshell, Satin, Semi-Gloss, Gloss
+  sheen?: string;            // same as finish for some products
+  base?: string;             // e.g., Ultra White, Deep Base, Oil-Based
+  application?: string;      // Interior, Exterior, or Interior/Exterior
+  volume?: string;           // e.g., 1 qt, 1 gal, 5 gal
+  lowVOC?: boolean;          // true to filter <= 50 g/L or tagged low-voc
 }
 
 export interface ProductSort {
