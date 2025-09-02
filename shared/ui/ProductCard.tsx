@@ -161,6 +161,28 @@ export function ProductCard({
             {product.title}
           </h3>
 
+          {/* Paint quick specs */}
+          {product.specifications && (
+            <div className="flex items-center gap-3 mb-2 text-xs text-foreground-muted">
+              {product.specifications['Color Hex'] && (
+                <span
+                  className="inline-block w-4 h-4 rounded-full border"
+                  style={{ backgroundColor: product.specifications['Color Hex'] }}
+                  title={product.specifications['Color'] || 'Color'}
+                />
+              )}
+              {product.specifications['Color'] && (
+                <span className="truncate max-w-[8rem]">{product.specifications['Color']}</span>
+              )}
+              {product.specifications['Finish'] && (
+                <span className="px-1.5 py-0.5 border rounded hidden sm:inline">{product.specifications['Finish']}</span>
+              )}
+              {product.specifications['Volume'] && (
+                <span className="px-1.5 py-0.5 border rounded hidden sm:inline">{product.specifications['Volume']}</span>
+              )}
+            </div>
+          )}
+
           {/* Rating */}
           <div className="flex items-center gap-1 mb-2">
             <div className="flex">
