@@ -397,15 +397,15 @@ export function AdminProducts() {
                           </Button>
                         </Link>
                         <Link to={`/admin/products/${product.id}/edit`}>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" disabled={!has('products.update')} onClick={(e) => { if (!has('products.update')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="text-destructive hover:text-destructive"
+                          onClick={() => { if (!has('products.delete')) { NotificationService.permissionDenied(); return; } handleDeleteProduct(product.id); }}
+                          className="text-destructive hover:text-destructive" disabled={!has('products.delete')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
