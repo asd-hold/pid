@@ -20,7 +20,7 @@ const heroSlides: HeroSlide[] = [
     title: 'Premium Interior Paint',
     subtitle: 'Low Odor • Low VOC',
     description: 'Beautiful, durable finishes for every room. Shop matte, eggshell, satin, and semi-gloss in thousands of colors.',
-    image: 'https://picsum.photos/seed/hero-paint-interior/1200/600',
+    image: 'https://images.pexels.com/photos/7217966/pexels-photo-7217966.jpeg',
     ctaText: 'Shop Interior Paint',
     ctaLink: '/catalog?category=interior-paint',
     badge: 'Color Match Available',
