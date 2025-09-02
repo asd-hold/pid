@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import { CouponsAPI, type Coupon } from '../../shared/api';
-import { Plus, Save, Trash2, CheckCircle2, XCircle, TicketPercent } from 'lucide-react';
+import { Plus, Save, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 
 export function AdminCoupons() {
   const [list, setList] = useState<Coupon[]>([]);
