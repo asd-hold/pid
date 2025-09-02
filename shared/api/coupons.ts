@@ -1,5 +1,7 @@
 import { Storage, STORAGE_KEYS } from '../lib/storage';
 import type { CartItem } from '../../entities';
+import { Storage, STORAGE_KEYS } from '../lib/storage';
+import { AuditAPI } from './audit';
 
 export type CouponType = 'percentage' | 'fixed';
 
@@ -54,6 +56,7 @@ export class CouponsAPI {
     const list = this.list();
     const coupon: Coupon = { ...data, id: genId(), usedCount: 0 };
     Storage.set(STORAGE_KEYS.COUPONS, [...list, coupon]);
+    AuditAPI.record({ action: 'create', entity: 'coupon', entityId: coupon.id, after: coupon });
     return coupon;
   }
 
@@ -61,18 +64,25 @@ export class CouponsAPI {
     const list = this.list();
     const idx = list.findIndex(c => c.id === id);
     if (idx === -1) return null;
+    const before = { ...list[idx] } as Coupon;
     const updated = { ...list[idx], ...patch } as Coupon;
     const next = [...list];
     next[idx] = updated;
     Storage.set(STORAGE_KEYS.COUPONS, next);
+    AuditAPI.record({ action: 'update', entity: 'coupon', entityId: id, before, after: updated });
     return updated;
   }
 
   static delete(id: string): boolean {
     const list = this.list();
+    const before = list.find(c => c.id === id) || null;
     const next = list.filter(c => c.id !== id);
     Storage.set(STORAGE_KEYS.COUPONS, next);
-    return next.length !== list.length;
+    const removed = next.length !== list.length;
+    if (removed) {
+      AuditAPI.record({ action: 'delete', entity: 'coupon', entityId: id, before });
+    }
+    return removed;
   }
 
   static validate(code: string, items: CartItem[], subtotal: number): { valid: boolean; reason?: string; coupon?: Coupon; discount?: number; freeShipping?: boolean } {
