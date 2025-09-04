@@ -391,7 +391,7 @@ export function AdminProducts() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
-                        <Link to={`/product/${product.slug}`} target="_blank">
+                        <Link to={`/product/${product.id}`} target="_blank">
                           <Button variant="ghost" size="sm">
                             <Eye className="h-4 w-4" />
                           </Button>
