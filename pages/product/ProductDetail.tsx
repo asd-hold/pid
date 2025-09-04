@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 
 export function ProductDetail() {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export function ProductDetail() {
   const categories = useAppSelector(selectCategories);
 
   const loadProduct = async () => {
-    if (!slug) {
+    if (!id) {
       setError('Product not found');
       setLoading(false);
       return;
@@ -62,7 +62,7 @@ export function ProductDetail() {
       setLoading(true);
       setError(null);
 
-      const productData = await ProductsAPI.getProductBySlug(slug);
+      const productData = await ProductsAPI.getProduct(id);
 
       if (!productData) {
         setError('Product not found');
@@ -86,7 +86,7 @@ export function ProductDetail() {
     ( async () => {
       await loadProduct();
     })()
-  }, [slug]);
+  }, [id]);
 
   useEffect(() => {
     if (categories.length === 0) {
