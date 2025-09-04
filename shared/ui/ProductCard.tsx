@@ -71,7 +71,7 @@ export function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setCurrentImageIndex(0); }}
     >
-      <Link to={`/product/${product.slug}`} className="block">
+      <Link to={`/product/${product.id}`} className="block">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-muted" onMouseMove={handleImageMove}>
           <img
@@ -159,7 +159,7 @@ export function ProductCard({
             )}
 
             {/* Title */}
-            <Link to={`/product/${product.slug}`} className="block">
+            <Link to={`/product/${product.id}`} className="block">
               <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                 {product.title}
               </h3>
