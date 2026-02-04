@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectCategories, fetchCategories } from '../../features/catalog/catalogSlice';
 import { Category } from '../../entities';
+import { CategoriesAPI } from '../../shared/api';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
@@ -99,10 +100,13 @@ export function AdminCategories() {
   const handleDeleteCategory = async (categoryId: string, categoryName: string) => {
     if (window.confirm(`Are you sure you want to delete "${categoryName}"? This action cannot be undone.`)) {
       try {
-        // TODO: Implement delete API call
-        console.log('Delete category:', categoryId);
+        await CategoriesAPI.deleteCategory(categoryId);
+        // Refresh the categories list by dispatching fetch again
+        dispatch(fetchCategories());
       } catch (error) {
         console.error('Failed to delete category:', error);
+        const message = error instanceof Error ? error.message : 'Failed to delete category. Please try again.';
+        alert(message);
       }
     }
   };

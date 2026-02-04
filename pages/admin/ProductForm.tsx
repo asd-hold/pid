@@ -4,16 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../app/hooks';
 import { selectCategories } from '../../features/catalog/catalogSlice';
 import { Product } from '../../entities';
+import { ProductsAPI, ImageUploadAPI } from '../../shared/api';
+import { ImageUploader, ImageItem } from '../../components/ui/ImageUploader';
 import { Button } from '../../shared/ui/Button';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Badge } from '../../components/ui/badge';
 import {
   Save,
   ArrowLeft,
-  Upload,
-  X,
   Plus,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 interface ProductFormData {
@@ -23,7 +24,7 @@ interface ProductFormData {
   price: number;
   originalPrice?: number;
   currency: string;
-  images: string[];
+  images: ImageItem[];
   category: string;
   subcategory?: string;
   tags: string[];
@@ -32,6 +33,7 @@ interface ProductFormData {
   brand: string;
   features: string[];
   specifications: Record<string, string>;
+  status: 'draft' | 'published' | 'archived' | 'discontinued';
   isNew: boolean;
   isFeatured: boolean;
   isOnSale: boolean;
@@ -47,7 +49,6 @@ export function ProductForm() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [currentImageUrl, setCurrentImageUrl] = useState('');
   const [currentTag, setCurrentTag] = useState('');
   const [currentFeature, setCurrentFeature] = useState('');
   const [specKey, setSpecKey] = useState('');
@@ -69,41 +70,57 @@ export function ProductForm() {
     brand: '',
     features: [],
     specifications: {},
+    status: 'draft',
     isNew: false,
     isFeatured: false,
     isOnSale: false
   });
 
   useEffect(() => {
-    if (isEditing) {
-      // TODO: Load existing product data
-      setLoading(true);
-      setTimeout(() => {
-        // Mock data for editing
-        setFormData({
-          title: 'Sample Product',
-          slug: 'sample-product',
-          description: 'This is a sample product description.',
-          price: 99.99,
-          originalPrice: 129.99,
-          currency: 'USD',
-          images: ['https://picsum.photos/400/400?random=1'],
-          category: 'electronics',
-          subcategory: 'audio',
-          tags: ['sample', 'electronics'],
-          stock: 50,
-          sku: 'SAMPLE-001',
-          brand: 'Sample Brand',
-          features: ['Feature 1', 'Feature 2'],
-          specifications: { 'Spec 1': 'Value 1', 'Spec 2': 'Value 2' },
-          isNew: false,
-          isFeatured: true,
-          isOnSale: true
-        });
-        setLoading(false);
-      }, 1000);
+    if (isEditing && id) {
+      const loadProduct = async () => {
+        setLoading(true);
+        try {
+          const product = await ProductsAPI.getProduct(id);
+          if (product) {
+            // Convert existing image URLs to ImageItem format
+            const imageItems: ImageItem[] = product.images.map((url, index) => ({
+              id: `existing-${index}-${Date.now()}`,
+              url,
+              isMain: index === 0
+            }));
+
+            setFormData({
+              title: product.title,
+              slug: product.slug,
+              description: product.description,
+              price: product.price,
+              originalPrice: product.originalPrice,
+              currency: product.currency,
+              images: imageItems,
+              category: product.category,
+              subcategory: product.subcategory,
+              tags: product.tags,
+              stock: product.stock,
+              sku: product.sku,
+              brand: product.brand || '',
+              features: product.features,
+              specifications: product.specifications,
+              status: product.status || 'published',
+              isNew: product.isNew,
+              isFeatured: product.isFeatured,
+              isOnSale: product.isOnSale
+            });
+          }
+        } catch (error) {
+          console.error('Failed to load product:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadProduct();
     }
-  }, [isEditing]);
+  }, [isEditing, id]);
 
   const mainCategories = categories.filter(cat => !cat.parentId);
   const subcategories = formData.category 
@@ -152,37 +169,61 @@ export function ProductForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setSaving(true);
     try {
-      // TODO: Implement save API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // Convert ImageItem array to string array for API
+      const imageUrls = formData.images.map(img => img.url);
+
+      const productData = {
+        title: formData.title,
+        slug: formData.slug,
+        description: formData.description,
+        price: formData.price,
+        originalPrice: formData.originalPrice,
+        currency: formData.currency,
+        images: imageUrls,
+        category: formData.category,
+        subcategory: formData.subcategory,
+        tags: formData.tags,
+        stock: formData.stock,
+        sku: formData.sku,
+        brand: formData.brand,
+        features: formData.features,
+        specifications: formData.specifications,
+        status: formData.status,
+        isNew: formData.isNew,
+        isFeatured: formData.isFeatured,
+        isOnSale: formData.isOnSale,
+        rating: 0,
+        reviewCount: 0,
+        soldCount: 0
+      };
+
+      if (isEditing && id) {
+        await ProductsAPI.updateProduct(id, productData);
+      } else {
+        await ProductsAPI.createProduct(productData);
+      }
+
       navigate('/admin/products');
     } catch (error) {
       console.error('Failed to save product:', error);
+      setErrors({ submit: 'Failed to save product. Please try again.' });
     } finally {
       setSaving(false);
     }
   };
 
-  const addImage = () => {
-    if (currentImageUrl.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, currentImageUrl.trim()]
-      }));
-      setCurrentImageUrl('');
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      return await ImageUploadAPI.uploadImage(file);
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      throw error;
     }
-  };
-
-  const removeImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
   };
 
   const addTag = () => {
@@ -282,7 +323,13 @@ export function ProductForm() {
             {/* Basic Information */}
             <div className="bg-card border rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-              
+
+              {errors.submit && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                  <p className="text-red-800 text-sm">{errors.submit}</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Title *</label>
@@ -396,43 +443,24 @@ export function ProductForm() {
             {/* Images */}
             <div className="bg-card border rounded-lg p-6">
               <h2 className="text-lg font-semibold mb-4">Product Images</h2>
-              
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={currentImageUrl}
-                    onChange={(e) => setCurrentImageUrl(e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-md"
-                    placeholder="Image URL"
-                  />
-                  <Button type="button" onClick={addImage}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add
-                  </Button>
-                </div>
 
-                {formData.images.length > 0 && (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {formData.images.map((image, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={image}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-24 object-cover rounded border"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <ImageUploader
+                images={formData.images}
+                onChange={(images) => {
+                  if (typeof images === 'function') {
+                    setFormData(prev => ({
+                      ...prev,
+                      images: images(prev.images)
+                    }));
+                  } else {
+                    handleInputChange('images', images);
+                  }
+                }}
+                onUpload={handleImageUpload}
+                maxImages={10}
+                maxFileSize={5}
+                disabled={saving}
+              />
             </div>
           </div>
 
@@ -483,40 +511,66 @@ export function ProductForm() {
               </div>
             </div>
 
-            {/* Status */}
+            {/* Product Status */}
             <div className="bg-card border rounded-lg p-6">
-              <h2 className="text-lg font-semibold mb-4">Status</h2>
-              
-              <div className="space-y-3">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isNew}
-                    onChange={(e) => handleInputChange('isNew', e.target.checked)}
-                    className="mr-2"
-                  />
-                  New Product
-                </label>
+              <h2 className="text-lg font-semibold mb-4">Publication Status</h2>
 
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isFeatured}
-                    onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
-                    className="mr-2"
-                  />
-                  Featured Product
-                </label>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value as any)}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                    <option value="discontinued">Discontinued</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formData.status === 'draft' && 'Product is hidden from customers and can be edited'}
+                    {formData.status === 'published' && 'Product is visible to customers and available for purchase'}
+                    {formData.status === 'archived' && 'Product is hidden but data is preserved'}
+                    {formData.status === 'discontinued' && 'Product is no longer available but visible for reference'}
+                  </p>
+                </div>
 
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={formData.isOnSale}
-                    onChange={(e) => handleInputChange('isOnSale', e.target.checked)}
-                    className="mr-2"
-                  />
-                  On Sale
-                </label>
+                <hr className="border-border" />
+
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium">Additional Flags</h3>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isNew}
+                      onChange={(e) => handleInputChange('isNew', e.target.checked)}
+                      className="mr-2"
+                    />
+                    New Product
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isFeatured}
+                      onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
+                      className="mr-2"
+                    />
+                    Featured Product
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={formData.isOnSale}
+                      onChange={(e) => handleInputChange('isOnSale', e.target.checked)}
+                      className="mr-2"
+                    />
+                    On Sale
+                  </label>
+                </div>
               </div>
             </div>
 

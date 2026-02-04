@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 
 export function ProductDetail() {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -44,6 +44,7 @@ export function ProductDetail() {
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [hoverPreviewIndex, setHoverPreviewIndex] = useState<number | null>(null);
   const [isImageZoomed, setIsImageZoomed] = useState(false);
 
   const isFavourite = useAppSelector(selectIsFavourite(product?.id || ''));
@@ -51,7 +52,7 @@ export function ProductDetail() {
   const categories = useAppSelector(selectCategories);
 
   const loadProduct = async () => {
-    if (!slug) {
+    if (!id) {
       setError('Product not found');
       setLoading(false);
       return;
@@ -61,7 +62,7 @@ export function ProductDetail() {
       setLoading(true);
       setError(null);
 
-      const productData = await ProductsAPI.getProductBySlug(slug);
+      const productData = await ProductsAPI.getProduct(id);
 
       if (!productData) {
         setError('Product not found');
@@ -85,7 +86,7 @@ export function ProductDetail() {
     ( async () => {
       await loadProduct();
     })()
-  }, [slug]);
+  }, [id]);
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -204,7 +205,7 @@ export function ProductDetail() {
             {/* Main Image */}
             <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
               <img
-                src={product.images[activeImageIndex] || '/placeholder.svg'}
+                src={(product.images[hoverPreviewIndex ?? activeImageIndex]) || '/placeholder.svg'}
                 alt={product.title}
                 className={`w-full h-full object-cover transition-transform duration-300 ${
                   isImageZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
@@ -257,6 +258,8 @@ export function ProductDetail() {
                   <button
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
+                    onMouseEnter={() => setHoverPreviewIndex(index)}
+                    onMouseLeave={() => setHoverPreviewIndex(null)}
                     className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
                       index === activeImageIndex ? 'border-primary' : 'border-transparent hover:border-muted-foreground'
                     }`}
@@ -344,6 +347,46 @@ export function ProductDetail() {
             {/* Description */}
             <div>
               <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+            </div>
+
+            {/* Paint Details */}
+            <div className="border rounded-md p-4 bg-card/50">
+              <h3 className="font-semibold text-foreground mb-3">Paint Details</h3>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                {product.specifications['Color Hex'] && (
+                  <span
+                    className="inline-flex items-center gap-2 px-2 py-1 rounded border bg-background"
+                    title={product.specifications['Color'] || 'Color'}
+                  >
+                    <span
+                      className="inline-block w-4 h-4 rounded-full border"
+                      style={{ backgroundColor: product.specifications['Color Hex'] }}
+                    />
+                    {product.specifications['Color'] || 'Color'}
+                  </span>
+                )}
+                {product.specifications['Finish'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Finish']}</span>
+                )}
+                {product.specifications['Sheen'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Sheen']}</span>
+                )}
+                {product.specifications['Base'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Base']}</span>
+                )}
+                {product.specifications['Volume'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Volume']}</span>
+                )}
+                {product.specifications['Coverage'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Coverage']}</span>
+                )}
+                {product.specifications['Application'] && (
+                  <span className="px-2 py-1 rounded border bg-background">{product.specifications['Application']}</span>
+                )}
+                {product.specifications['VOC g/L'] && (
+                  <span className="px-2 py-1 rounded border bg-background">VOC: {product.specifications['VOC g/L']}</span>
+                )}
+              </div>
             </div>
 
             {/* Features */}

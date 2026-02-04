@@ -150,7 +150,36 @@ export function Cart() {
 
   // Use currency-formatted totals from the hook
   const { subtotal, shipping, tax, total } = orderTotal;
-  const discount = 0; // You can implement discount logic here if needed
+  const [couponCode, setCouponCode] = React.useState('');
+  const [couponApplied, setCouponApplied] = React.useState<{ code?: string; discount?: number } | null>(null);
+
+  const applyCoupon = async () => {
+    const { CartAPI } = await import('../../shared/api/cart');
+    const { CouponsAPI } = await import('../../shared/api/coupons');
+    const currentCart = await CartAPI.getCart();
+    const validation = CouponsAPI.validate(couponCode.trim(), currentCart.items, currentCart.subtotal);
+    if (!validation.valid) {
+      alert(validation.reason || 'Invalid coupon');
+      return;
+    }
+    // apply discount and optional free shipping
+    currentCart.discount = validation.discount || 0;
+    if (validation.freeShipping) currentCart.shipping = 0;
+    currentCart.total = Math.max(0, currentCart.subtotal + currentCart.tax + currentCart.shipping - currentCart.discount);
+    (await import('../../shared/lib/storage')).Storage.set((await import('../../shared/lib/storage')).STORAGE_KEYS.CART, currentCart);
+    setCouponApplied({ code: couponCode.trim(), discount: currentCart.discount });
+    dispatch(fetchCart());
+  };
+
+  const removeCoupon = async () => {
+    const { CartAPI } = await import('../../shared/api/cart');
+    const cart = await CartAPI.getCart();
+    cart.discount = 0;
+    (await import('../../shared/lib/storage')).Storage.set((await import('../../shared/lib/storage')).STORAGE_KEYS.CART, cart);
+    setCouponApplied(null);
+    setCouponCode('');
+    dispatch(fetchCart());
+  };
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -287,16 +316,30 @@ export function Cart() {
                   <span className="text-foreground-muted">{t('cart.tax')}</span>
                   <span className="text-foreground">{tax.formatted}</span>
                 </div>
-                
-                {discount > 0 && (
+
+                {couponApplied?.discount ? (
                   <div className="flex justify-between text-success">
-                    <span>{t('cart.discount')}</span>
-                    <span>-${discount.toFixed(2)}</span>
+                    <span>Discount{couponApplied.code ? ` (${couponApplied.code})` : ''}</span>
+                    <span>- ${couponApplied.discount.toFixed(2)}</span>
                   </div>
-                )}
-                
-                <hr className="border-border" />
-                
+                ) : null}
+
+                <div className="mt-4">
+                  <div className="flex gap-2">
+                    <input
+                      className="flex-1 px-3 py-2 border rounded-md"
+                      placeholder="Coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                    />
+                    <Button variant="outline" onClick={couponApplied ? removeCoupon : applyCoupon}>
+                      {couponApplied ? 'Remove' : 'Apply'}
+                    </Button>
+                  </div>
+                </div>
+
+                <hr className="border-border mt-4" />
+
                 <div className="flex justify-between text-lg font-semibold">
                   <span className="text-foreground">{t('cart.total')}</span>
                   <span className="text-foreground">{total.formatted}</span>

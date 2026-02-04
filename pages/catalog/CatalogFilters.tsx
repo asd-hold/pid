@@ -54,10 +54,21 @@ export function CatalogFilters({
     if (filters.isOnSale) count++;
     if (filters.isNew) count++;
     if (filters.inStock) count++;
+    if (filters.colorFamily) count++;
+    if (filters.finish) count++;
+    if (filters.sheen) count++;
+    if (filters.base) count++;
+    if (filters.application) count++;
+    if (filters.volume) count++;
+    if (filters.lowVOC) count++;
     return count;
   };
 
-  const brands = ['Apple', 'Samsung', 'Nike', 'Adidas', 'Sony', 'Dell', 'HP', 'Canon'];
+  const brands = ['ColorCrafters', 'ProFinish', 'WeatherGuard', 'SealPro', 'WoodGuard', 'ArtisanCoat', 'ProTools'];
+  const colorFamilies = ['White', 'Gray', 'Blue', 'Green', 'Red', 'Yellow', 'Brown', 'Black', 'Beige'];
+  const finishes = ['Flat', 'Matte', 'Eggshell', 'Satin', 'Semi-Gloss', 'Gloss'];
+  const volumes = ['1 qt', '1 gal', '5 gal'];
+  const applications = ['Interior', 'Exterior', 'Interior/Exterior'];
 
   return (
     <div className="space-y-6">
@@ -115,8 +126,8 @@ export function CatalogFilters({
               {filters.category && (
                 <Badge variant="secondary" className="text-xs">
                   {filters.category}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => handleFilterChange('category', undefined)}
                   />
                 </Badge>
@@ -124,23 +135,53 @@ export function CatalogFilters({
               {filters.brand && (
                 <Badge variant="secondary" className="text-xs">
                   {filters.brand}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => handleFilterChange('brand', undefined)}
                   />
+                </Badge>
+              )}
+              {filters.colorFamily && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.colorFamily}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('colorFamily', undefined)} />
+                </Badge>
+              )}
+              {filters.finish && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.finish}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('finish', undefined)} />
+                </Badge>
+              )}
+              {filters.application && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.application}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('application', undefined)} />
+                </Badge>
+              )}
+              {filters.volume && (
+                <Badge variant="secondary" className="text-xs">
+                  {filters.volume}
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('volume', undefined)} />
                 </Badge>
               )}
               {(filters.priceMin !== undefined || filters.priceMax !== undefined) && (
                 <Badge variant="secondary" className="text-xs">
                   ${filters.priceMin || 0} - ${filters.priceMax || 1000}
-                  <X 
-                    className="h-3 w-3 ml-1 cursor-pointer" 
+                  <X
+                    className="h-3 w-3 ml-1 cursor-pointer"
                     onClick={() => {
                       handleFilterChange('priceMin', undefined);
                       handleFilterChange('priceMax', undefined);
                       setPriceRange([0, 1000]);
                     }}
                   />
+                </Badge>
+              )}
+              {filters.lowVOC && (
+                <Badge variant="secondary" className="text-xs">
+                  Low VOC
+                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => handleFilterChange('lowVOC', undefined)} />
                 </Badge>
               )}
             </div>
@@ -197,6 +238,81 @@ export function CatalogFilters({
           </div>
         </div>
 
+        {/* Color Family */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Color Family</Label>
+          <div className="flex flex-wrap gap-2">
+            <button
+              className={`px-2 py-1 rounded border text-xs ${!filters.colorFamily ? 'bg-muted' : ''}`}
+              onClick={() => handleFilterChange('colorFamily', undefined)}
+            >All</button>
+            {colorFamilies.map(color => (
+              <button
+                key={color}
+                className={`flex items-center gap-2 px-2 py-1 rounded border text-xs ${filters.colorFamily === color ? 'bg-primary text-primary-foreground' : ''}`}
+                onClick={() => handleFilterChange('colorFamily', color)}
+              >
+                <span
+                  className="inline-block w-4 h-4 rounded-full border"
+                  style={{ backgroundColor: color.toLowerCase() === 'white' ? '#fff' : color.toLowerCase() === 'black' ? '#000' : undefined }}
+                />
+                {color}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Finish */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Finish</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="finish-all" checked={!filters.finish} onCheckedChange={() => handleFilterChange('finish', undefined)} />
+              <Label htmlFor="finish-all" className="text-sm font-normal">All Finishes</Label>
+            </div>
+            {finishes.map(f => (
+              <div key={f} className="flex items-center space-x-2">
+                <Checkbox id={`finish-${f}`} checked={filters.finish === f} onCheckedChange={(checked) => handleFilterChange('finish', checked ? f : undefined)} />
+                <Label htmlFor={`finish-${f}`} className="text-sm font-normal">{f}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Application */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Application</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="app-all" checked={!filters.application} onCheckedChange={() => handleFilterChange('application', undefined)} />
+              <Label htmlFor="app-all" className="text-sm font-normal">All</Label>
+            </div>
+            {applications.map(a => (
+              <div key={a} className="flex items-center space-x-2">
+                <Checkbox id={`app-${a}`} checked={filters.application === a} onCheckedChange={(checked) => handleFilterChange('application', checked ? a : undefined)} />
+                <Label htmlFor={`app-${a}`} className="text-sm font-normal">{a}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Volume */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium">Volume</Label>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="vol-all" checked={!filters.volume} onCheckedChange={() => handleFilterChange('volume', undefined)} />
+              <Label htmlFor="vol-all" className="text-sm font-normal">All Sizes</Label>
+            </div>
+            {volumes.map(v => (
+              <div key={v} className="flex items-center space-x-2">
+                <Checkbox id={`vol-${v}`} checked={filters.volume === v} onCheckedChange={(checked) => handleFilterChange('volume', checked ? v : undefined)} />
+                <Label htmlFor={`vol-${v}`} className="text-sm font-normal">{v}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Brand */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">{t('catalog.brand', 'Brand')}</Label>
@@ -216,7 +332,7 @@ export function CatalogFilters({
                 <Checkbox
                   id={`brand-${brand}`}
                   checked={filters.brand === brand}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     handleFilterChange('brand', checked ? brand : undefined)
                   }
                 />
@@ -291,6 +407,16 @@ export function CatalogFilters({
               />
               <Label htmlFor="in-stock" className="text-sm font-normal">
                 {t('catalog.inStock', 'In Stock Only')}
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="low-voc"
+                checked={filters.lowVOC || false}
+                onCheckedChange={(checked) => handleFilterChange('lowVOC', checked || undefined)}
+              />
+              <Label htmlFor="low-voc" className="text-sm font-normal">
+                Low VOC (≤ 50 g/L)
               </Label>
             </div>
           </div>

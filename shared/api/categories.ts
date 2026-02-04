@@ -1,5 +1,6 @@
 import { Category, CategoryTree, CategoryFilter } from '../../entities';
 import { Storage, STORAGE_KEYS } from '../lib/storage';
+import { AuditAPI } from './audit';
 
 const delay = (ms: number = 300) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -89,6 +90,7 @@ export class CategoriesAPI {
     categories.push(newCategory);
     Storage.set(STORAGE_KEYS.CATEGORIES, categories);
 
+    AuditAPI.record({ action: 'create', entity: 'category', entityId: newCategory.id, after: newCategory });
     return newCategory;
   }
 
@@ -100,12 +102,14 @@ export class CategoriesAPI {
 
     if (index === -1) return null;
 
+    const before = { ...categories[index] };
     categories[index] = {
       ...categories[index],
       ...updates,
     };
 
     Storage.set(STORAGE_KEYS.CATEGORIES, categories);
+    AuditAPI.record({ action: 'update', entity: 'category', entityId: id, before, after: categories[index] });
     return categories[index];
   }
 
@@ -113,7 +117,8 @@ export class CategoriesAPI {
     await delay();
     
     const categories = Storage.get<Category[]>(STORAGE_KEYS.CATEGORIES, []);
-    
+    const before = categories.find(c => c.id === id) || null;
+
     // Check if category has children
     const hasChildren = categories.some(category => category.parentId === id);
     if (hasChildren) {
@@ -133,6 +138,7 @@ export class CategoriesAPI {
     }
 
     Storage.set(STORAGE_KEYS.CATEGORIES, filteredCategories);
+    AuditAPI.record({ action: 'delete', entity: 'category', entityId: id, before });
     return true;
   }
 

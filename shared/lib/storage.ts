@@ -70,6 +70,9 @@ export const STORAGE_KEYS = {
   SEARCH_HISTORY: 'ecommerce_search_history',
   FILTERS: 'ecommerce_filters',
   ADDRESSES: 'ecommerce_addresses',
+  SETTINGS: 'ecommerce_admin_settings',
+  COUPONS: 'ecommerce_coupons',
+  AUDIT_LOGS: 'ecommerce_audit_logs',
 } as const;
 
 export type StorageKey = typeof STORAGE_KEYS[keyof typeof STORAGE_KEYS];

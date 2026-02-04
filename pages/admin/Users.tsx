@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
+import { usePermissions } from '../../shared/lib/permissions';
+import { NotificationService } from '../../shared/lib/notifications';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
 import {
@@ -39,6 +41,7 @@ interface User {
 
 export function AdminUsers() {
   const { t } = useTranslation();
+  const { has } = usePermissions();
   
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -221,6 +224,14 @@ export function AdminUsers() {
   const activeUsers = users.filter(u => u.status === 'active').length;
   const totalRevenue = users.reduce((sum, u) => sum + u.totalSpent, 0);
   const avgOrderValue = totalRevenue / Math.max(users.reduce((sum, u) => sum + u.ordersCount, 0), 1);
+
+  if (!has('users.read')) {
+    return (
+      <div className="bg-destructive/10 border border-destructive text-destructive p-6 rounded-md">
+        You do not have permission to view Users.
+      </div>
+    );
+  }
 
   if (loading) {
     return (

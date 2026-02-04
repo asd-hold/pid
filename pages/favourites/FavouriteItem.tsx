@@ -36,7 +36,7 @@ export function FavouriteItem({
         <div className="flex gap-4">
           {/* Product Image */}
           <div className="flex-shrink-0">
-            <Link to={`/product/${product.slug}`}>
+            <Link to={`/product/${product.id}`}>
               <div className="w-20 h-20 bg-muted rounded-md overflow-hidden">
                 <img
                   src={product.images[0] || '/placeholder.svg'}
@@ -53,7 +53,7 @@ export function FavouriteItem({
             <div className="flex items-start justify-between">
               <div>
                 <Link 
-                  to={`/product/${product.slug}`}
+                  to={`/product/${product.id}`}
                   className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-1"
                 >
                   {product.title}
@@ -137,7 +137,7 @@ export function FavouriteItem({
     <div className="bg-card border rounded-lg overflow-hidden hover:shadow-md transition-shadow group">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
-        <Link to={`/product/${product.slug}`}>
+        <Link to={`/product/${product.id}`}>
           <img
             src={product.images[0] || '/placeholder.svg'}
             alt={product.title}
@@ -175,7 +175,7 @@ export function FavouriteItem({
       <div className="p-4 space-y-3">
         <div>
           <Link 
-            to={`/product/${product.slug}`}
+            to={`/product/${product.id}`}
             className="font-semibold text-foreground hover:text-primary transition-colors line-clamp-2"
           >
             {product.title}

@@ -36,7 +36,7 @@ export function Header() {
         {/* Top bar */}
         <div className="flex items-center justify-between py-2 text-sm border-b border-border">
           <div className="flex items-center gap-4">
-            <span className="text-foreground-muted">Free shipping on orders over $100</span>
+            <span className="text-foreground-muted">Free color matching • Pro discounts available</span>
           </div>
           <div className="flex items-center gap-4">
             {/* Currency Switcher */}
@@ -51,9 +51,9 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">E</span>
+              <span className="text-primary-foreground font-bold text-lg">P</span>
             </div>
-            <span className="text-xl font-bold text-foreground">EcoShop</span>
+            <span className="text-xl font-bold text-foreground">PaintHub</span>
           </Link>
 
           {/* Search */}
@@ -132,6 +132,15 @@ export function Header() {
                         >
                           {t('profile.orderHistory')}
                         </Link>
+                        {(user && user.role && user.role !== 'user') && (
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 text-sm hover:bg-surface-alt transition-theme text-primary font-medium"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            🛠️ Admin Panel
+                          </Link>
+                        )}
                         <hr className="my-1 border-border" />
                         <button
                           className="block w-full text-left px-4 py-2 text-sm hover:bg-surface-alt transition-theme"

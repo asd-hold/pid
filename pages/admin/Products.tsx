@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { selectProducts, selectCategories, fetchCategories } from '../../features/catalog/catalogSlice';
 import { ProductsAPI } from '../../shared/api';
+import { usePermissions } from '../../shared/lib/permissions';
+import { NotificationService } from '../../shared/lib/notifications';
 import { Product } from '../../entities';
 import { LoadingSpinner } from '../../shared/ui/LoadingSpinner';
 import { Button } from '../../shared/ui/Button';
@@ -28,9 +30,11 @@ export function AdminProducts() {
   const categories = useAppSelector(selectCategories);
   
   const [products, setProducts] = useState<Product[]>([]);
+  const { has } = usePermissions();
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'stock' | 'dateAdded'>('dateAdded');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
@@ -64,7 +68,8 @@ export function AdminProducts() {
     const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.sku.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStatus = selectedStatus === '' || product.status === selectedStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -96,6 +101,21 @@ export function AdminProducts() {
     }
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'published':
+        return { label: 'Published', color: 'default' as const };
+      case 'draft':
+        return { label: 'Draft', color: 'secondary' as const };
+      case 'archived':
+        return { label: 'Archived', color: 'outline' as const };
+      case 'discontinued':
+        return { label: 'Discontinued', color: 'destructive' as const };
+      default:
+        return { label: status, color: 'secondary' as const };
+    }
+  };
+
   const getCategoryName = (categorySlug: string) => {
     const category = categories.find(cat => cat.slug === categorySlug);
     return category?.name || categorySlug;
@@ -104,11 +124,24 @@ export function AdminProducts() {
   const handleDeleteProduct = async (productId: string) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        // TODO: Implement delete API call
+        await ProductsAPI.deleteProduct(productId);
         setProducts(products.filter(p => p.id !== productId));
       } catch (error) {
         console.error('Failed to delete product:', error);
+        alert('Failed to delete product. Please try again.');
       }
+    }
+  };
+
+  const handleStatusChange = async (productId: string, newStatus: 'draft' | 'published' | 'archived' | 'discontinued') => {
+    try {
+      await ProductsAPI.updateProduct(productId, { status: newStatus });
+      setProducts(products.map(p =>
+        p.id === productId ? { ...p, status: newStatus } : p
+      ));
+    } catch (error) {
+      console.error('Failed to update product status:', error);
+      alert('Failed to update product status. Please try again.');
     }
   };
 
@@ -133,7 +166,7 @@ export function AdminProducts() {
           </p>
         </div>
         <Link to="/admin/products/new">
-          <Button>
+          <Button disabled={!has('products.create')} onClick={(e) => { if (!has('products.create')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
             <Plus className="h-4 w-4 mr-2" />
             {t('admin.products.addProduct', 'Add Product')}
           </Button>
@@ -142,7 +175,7 @@ export function AdminProducts() {
 
       {/* Filters */}
       <div className="bg-card border rounded-lg p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -167,6 +200,19 @@ export function AdminProducts() {
                 {category.name}
               </option>
             ))}
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="px-3 py-2 bg-background border rounded-md text-sm"
+          >
+            <option value="">All Statuses</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+            <option value="discontinued">Discontinued</option>
           </select>
 
           {/* Sort By */}
@@ -209,9 +255,9 @@ export function AdminProducts() {
           <div className="flex items-center">
             <AlertTriangle className="h-8 w-8 text-orange-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-muted-foreground">Low Stock</p>
+              <p className="text-sm font-medium text-muted-foreground">Published</p>
               <p className="text-2xl font-bold text-foreground">
-                {products.filter(p => p.stock > 0 && p.stock <= 5).length}
+                {products.filter(p => (p.status || 'published') === 'published').length}
               </p>
             </div>
           </div>
@@ -259,6 +305,9 @@ export function AdminProducts() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Stock
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Stock Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
@@ -324,22 +373,39 @@ export function AdminProducts() {
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
+                      <select
+                        value={product.status || 'published'}
+                        onChange={(e) => { if (!has('products.update')) { e.preventDefault(); NotificationService.permissionDenied(); return; } handleStatusChange(product.id, e.target.value as any); }}
+                        className={`px-2 py-1 rounded-md text-xs font-medium border-0 cursor-pointer ${
+                          getStatusBadge(product.status || 'published').color === 'default' ? 'bg-primary text-primary-foreground' :
+                          getStatusBadge(product.status || 'published').color === 'secondary' ? 'bg-secondary text-secondary-foreground' :
+                          getStatusBadge(product.status || 'published').color === 'destructive' ? 'bg-destructive text-destructive-foreground' :
+                          'bg-muted text-muted-foreground'
+                        }`}
+                      >
+                        <option value="draft">Draft</option>
+                        <option value="published">Published</option>
+                        <option value="archived">Archived</option>
+                        <option value="discontinued">Discontinued</option>
+                      </select>
+                    </td>
+                    <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
-                        <Link to={`/product/${product.slug}`} target="_blank">
+                        <Link to={`/product/${product.id}`} target="_blank">
                           <Button variant="ghost" size="sm">
                             <Eye className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Link to={`/admin/products/${product.id}/edit`}>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" disabled={!has('products.update')} onClick={(e) => { if (!has('products.update')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="text-destructive hover:text-destructive"
+                          onClick={() => { if (!has('products.delete')) { NotificationService.permissionDenied(); return; } handleDeleteProduct(product.id); }}
+                          className="text-destructive hover:text-destructive" disabled={!has('products.delete')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -365,11 +431,11 @@ export function AdminProducts() {
               }
             </p>
             <Link to="/admin/products/new">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('admin.products.addProduct', 'Add Product')}
-              </Button>
-            </Link>
+          <Button disabled={!has('products.create')} onClick={(e) => { if (!has('products.create')) { e.preventDefault(); NotificationService.permissionDenied(); } }}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t('admin.products.addProduct', 'Add Product')}
+          </Button>
+        </Link>
           </div>
         )}
       </div>

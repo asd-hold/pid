@@ -159,6 +159,14 @@ export class CurrencyUtils {
   }
 
   /**
+   * Get currency flag component props (for UI display)
+   */
+  static getCurrencyFlagProps(currencyCode: string): { currencyCode: string } {
+    return { currencyCode };
+  }
+
+  /**
+   * @deprecated Use getCurrencyFlagProps and CurrencyFlag component instead
    * Get currency flag emoji (for UI display)
    */
   static getCurrencyFlag(currencyCode: string): string {
@@ -172,7 +180,7 @@ export class CurrencyUtils {
       CHF: '🇨🇭',
       CNY: '🇨🇳',
     };
-    
+
     return flags[currencyCode] || '💱';
   }
 
@@ -196,6 +204,14 @@ export class CurrencyUtils {
   static formatCurrencyForDisplay(currency: Currency): string {
     const flag = this.getCurrencyFlag(currency.code);
     return `${flag} ${currency.code} - ${currency.name}`;
+  }
+
+  /**
+   * Check if currency has a local flag component available
+   */
+  static hasCurrencyFlag(currencyCode: string): boolean {
+    const supportedFlags = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'CNY'];
+    return supportedFlags.includes(currencyCode);
   }
 }
 

@@ -60,50 +60,32 @@ export function AdminDashboard() {
         }
 
         // Simulate loading other data
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Calculate stats
-        const mockStats: DashboardStats = {
-          totalProducts: products.length || 25,
-          totalCategories: categories.length || 12,
-          totalOrders: 156,
-          totalUsers: 342,
-          totalRevenue: 48750,
-          recentActivity: [
-            {
-              id: '1',
-              type: 'order',
-              message: 'New order #ORD-001 placed by John Doe',
-              timestamp: '2 minutes ago'
-            },
-            {
-              id: '2',
-              type: 'product',
-              message: 'Product "Wireless Headphones" updated',
-              timestamp: '15 minutes ago'
-            },
-            {
-              id: '3',
-              type: 'user',
-              message: 'New user registration: jane@example.com',
-              timestamp: '1 hour ago'
-            },
-            {
-              id: '4',
-              type: 'order',
-              message: 'Order #ORD-002 marked as shipped',
-              timestamp: '2 hours ago'
-            },
-            {
-              id: '5',
-              type: 'product',
-              message: 'New product "Gaming Laptop" added',
-              timestamp: '3 hours ago'
-            }
-          ]
+        // Build recent activity from audit logs
+        const { AuditAPI } = await import('../../shared/api/audit');
+        const logs = AuditAPI.list({ limit: 10 });
+        const toAgo = (ts: string) => {
+          const diff = Date.now() - new Date(ts).getTime();
+          const m = Math.floor(diff / 60000); if (m < 1) return 'just now'; if (m < 60) return `${m} min ago`;
+          const h = Math.floor(m / 60); if (h < 24) return `${h} h ago`;
+          const d = Math.floor(h / 24); return `${d} d ago`;
         };
+        const recentActivity = logs.map(l => ({
+          id: l.id,
+          type: (l.entity === 'product' ? 'product' : l.entity === 'category' ? 'product' : l.entity === 'settings' ? 'user' : 'order') as 'order'|'product'|'user',
+          message: `${l.userEmail || 'System'} ${l.action} ${l.entity}${l.entityId ? ` (${l.entityId})` : ''}`,
+          timestamp: toAgo(l.timestamp)
+        }));
 
-        setStats(mockStats);
+        setStats({
+          totalProducts: products.length || 0,
+          totalCategories: categories.length || 0,
+          totalOrders: 0,
+          totalUsers: 0,
+          totalRevenue: 0,
+          recentActivity,
+        });
       } catch (error) {
         console.error('Failed to load dashboard data:', error);
       } finally {

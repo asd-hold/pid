@@ -10,6 +10,7 @@ import {
 } from './currencySlice';
 import { Button } from '../../shared/ui/Button';
 import { CurrencyUtils } from '../../shared/lib/currency';
+import { CurrencyFlag } from '../../shared/ui/FlagIcons';
 import { ChevronDown, RefreshCw, DollarSign } from 'lucide-react';
 
 interface CurrencySwitcherProps {
@@ -74,7 +75,7 @@ export function CurrencySwitcher({
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <span>{CurrencyUtils.getCurrencyFlag(currency.code)}</span>
+                    <CurrencyFlag currencyCode={currency.code} size={16} />
                     <span>{currency.code}</span>
                     <span className="text-sm text-muted-foreground">{currency.name}</span>
                   </span>
@@ -98,7 +99,7 @@ export function CurrencySwitcher({
           disabled={loading}
           className="flex items-center gap-2"
         >
-          <span>{CurrencyUtils.getCurrencyFlag(selectedCurrency.code)}</span>
+          <CurrencyFlag currencyCode={selectedCurrency.code} size={16} />
           <span className="font-medium">{selectedCurrency.code}</span>
           <ChevronDown className="h-3 w-3" />
         </Button>
@@ -115,7 +116,7 @@ export function CurrencySwitcher({
                     currency.code === selectedCurrency.code ? 'bg-muted font-medium' : ''
                   }`}
                 >
-                  <span>{CurrencyUtils.getCurrencyFlag(currency.code)}</span>
+                  <CurrencyFlag currencyCode={currency.code} size={16} />
                   <span>{currency.code}</span>
                 </button>
               ))}
@@ -143,7 +144,7 @@ export function CurrencySwitcher({
           className="flex items-center gap-2 min-w-[120px] justify-between"
         >
           <div className="flex items-center gap-2">
-            <span>{CurrencyUtils.getCurrencyFlag(selectedCurrency.code)}</span>
+            <CurrencyFlag currencyCode={selectedCurrency.code} size={16} />
             <span className="font-medium">{selectedCurrency.code}</span>
           </div>
           <ChevronDown className="h-4 w-4" />
@@ -184,7 +185,7 @@ export function CurrencySwitcher({
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-lg">{CurrencyUtils.getCurrencyFlag(currency.code)}</span>
+                    <CurrencyFlag currencyCode={currency.code} size={20} />
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{currency.code}</span>

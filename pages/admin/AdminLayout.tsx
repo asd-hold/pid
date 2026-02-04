@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { selectUser, logout } from '../../features/auth/authSlice';
 import { Button } from '../../shared/ui/Button';
 import { Badge } from '../../components/ui/badge';
+import { usePermissions } from '../../shared/lib/permissions';
 import {
   LayoutDashboard,
   Package,
@@ -19,7 +21,8 @@ import {
   Search,
   Home,
   ChevronDown,
-  Activity
+  Mail,
+  Truck
 } from 'lucide-react';
 
 const adminNavigation = [
@@ -54,6 +57,26 @@ const adminNavigation = [
     badge: '342'
   },
   {
+    name: 'Contacts',
+    href: '/admin/contacts',
+    icon: Mail
+  },
+  {
+    name: 'Shipping',
+    href: '/admin/shipping',
+    icon: Truck
+  },
+  {
+    name: 'Coupons',
+    href: '/admin/coupons',
+    icon: Mail
+  },
+  {
+    name: 'Bulk Update',
+    href: '/admin/bulk-update',
+    icon: Layers
+  },
+  {
     name: 'Analytics',
     href: '/admin/analytics',
     icon: BarChart3
@@ -69,6 +92,9 @@ export function AdminLayout() {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  const { has } = usePermissions();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications] = useState([
     { id: 1, message: 'New order received', time: '2m ago', unread: true },
@@ -86,8 +112,8 @@ export function AdminLayout() {
   };
 
   const handleLogout = () => {
-    // TODO: Implement logout logic
-    navigate('/admin/login');
+    dispatch(logout());
+    navigate('/');
   };
 
   const SidebarContent = () => (
@@ -102,7 +128,20 @@ export function AdminLayout() {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
-        {adminNavigation.map((item) => {
+        {adminNavigation
+          .filter((item) => {
+            switch (item.name) {
+              case 'Products': return has('products.read');
+              case 'Categories': return has('categories.read');
+              case 'Users': return has('users.read');
+              case 'Orders': return has('orders.read');
+              case 'Settings': return has('settings.update');
+              case 'Coupons': return has('coupons.read');
+              case 'Bulk Update': return has('products.bulkUpdate');
+              default: return true;
+            }
+          })
+          .map((item) => {
           const Icon = item.icon;
           const isActive = isActiveRoute(item.href, item.exact);
           
@@ -136,11 +175,17 @@ export function AdminLayout() {
       <div className="px-4 py-4 border-t">
         <div className="flex items-center space-x-3 mb-4">
           <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground text-sm font-medium">A</span>
+            <span className="text-primary-foreground text-sm font-medium">
+              {user?.firstName?.charAt(0) || 'A'}{user?.lastName?.charAt(0) || 'D'}
+            </span>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Admin User</p>
-            <p className="text-xs text-muted-foreground">admin@example.com</p>
+            <p className="text-sm font-medium text-foreground">
+              {user ? `${user.firstName} ${user.lastName}` : 'Admin User'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {user?.email || 'admin@example.com'}
+            </p>
           </div>
         </div>
         
@@ -162,10 +207,10 @@ export function AdminLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -174,14 +219,14 @@ export function AdminLayout() {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-card border-r transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:static lg:inset-0`}>
+      } lg:static lg:inset-0 lg:flex-shrink-0`}>
         <SidebarContent />
       </div>
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="bg-card border-b px-4 py-3 lg:px-6">
+        <header className="bg-card border-b px-4 py-3 lg:px-6 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
@@ -190,7 +235,7 @@ export function AdminLayout() {
               >
                 <Menu className="h-5 w-5" />
               </button>
-              
+
               {/* Search */}
               <div className="relative ml-4 flex-1 max-w-lg">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -207,8 +252,8 @@ export function AdminLayout() {
               <button className="relative p-2 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
                 <Bell className="h-5 w-5" />
                 {unreadNotifications > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 text-xs flex items-center justify-center p-0"
                   >
                     {unreadNotifications}
@@ -220,7 +265,9 @@ export function AdminLayout() {
               <div className="relative">
                 <button className="flex items-center space-x-2 p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted">
                   <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground text-xs font-medium">A</span>
+                    <span className="text-primary-foreground text-xs font-medium">
+                      {user?.firstName?.charAt(0) || 'A'}{user?.lastName?.charAt(0) || 'D'}
+                    </span>
                   </div>
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -230,8 +277,8 @@ export function AdminLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-6">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="h-full w-full">
             <Outlet />
           </div>
         </main>
